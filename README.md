@@ -19,3 +19,5 @@ byr  docs
 超级厉害的毛学长的博客：https://blog.xqmmcqs.com   +  https://github.com/xqmmcqs/BUPT-Projects
 
 https://github.com/Easter1995/BUPT-csapp-lab
+
+https://wiki.byrdocs.org/w/%E9%A6%96%E9%A1%B5
