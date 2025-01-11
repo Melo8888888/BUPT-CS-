@@ -16,4 +16,6 @@ https://www.notion.so/CS50x2024-69802bc7a4f84119b73aaf3c62e86851  CS50
 
 byr  docs
 
-超级厉害的毛学长的博客：https://blog.xqmmcqs.com
+超级厉害的毛学长的博客：https://blog.xqmmcqs.com   +  https://github.com/xqmmcqs/BUPT-Projects
+
+https://github.com/Easter1995/BUPT-csapp-lab
