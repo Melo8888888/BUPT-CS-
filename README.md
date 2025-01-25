@@ -21,3 +21,5 @@ byr  docs
 https://github.com/Easter1995/BUPT-csapp-lab
 
 https://wiki.byrdocs.org/w/%E9%A6%96%E9%A1%B5
+
+https://github.com/shucan-yang/BUPT_CS_course_notes
