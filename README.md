@@ -23,3 +23,7 @@ https://github.com/Easter1995/BUPT-csapp-lab
 https://wiki.byrdocs.org/w/%E9%A6%96%E9%A1%B5
 
 https://github.com/shucan-yang/BUPT_CS_course_notes
+
+非常非常厉害的卢学长 https://github.com/agicy
+
+7.16更新： **在另外一个分支下面是大二下的学习资料**
