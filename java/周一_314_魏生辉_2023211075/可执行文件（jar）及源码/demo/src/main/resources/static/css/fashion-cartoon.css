@@ -1,0 +1,644 @@
+/* 穿搭页面卡通风格 */
+
+/* 导入卡通字体 */
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&display=swap');
+
+/* 穿搭卡通卡片 */
+.fashion-cartoon-card {
+    background-color: #fff;
+    border: 3px solid #2B2D42;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 #2B2D42;
+    transition: all 0.3s ease;
+    transform: rotate(0deg);
+    position: relative;
+    margin-bottom: 25px;
+    height: 100%;
+}
+
+.fashion-cartoon-card:hover {
+    transform: translateY(-5px) rotate(2deg);
+    box-shadow: 8px 8px 0 #2B2D42;
+}
+
+.fashion-cartoon-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #FF9F1C, #FFD166);
+    z-index: 1;
+}
+
+/* 不同场合的颜色 */
+.fashion-cartoon-card[data-occasion="casual"]::before {
+    background: linear-gradient(to right, #0dcaf0, #06D6A0);
+}
+
+.fashion-cartoon-card[data-occasion="formal"]::before {
+    background: linear-gradient(to right, #212529, #6c757d);
+}
+
+.fashion-cartoon-card[data-occasion="party"]::before {
+    background: linear-gradient(to right, #dc3545, #e83e8c);
+}
+
+.fashion-cartoon-card[data-occasion="work"]::before {
+    background: linear-gradient(to right, #0d6efd, #0a58ca);
+}
+
+/* 卡片标题 */
+.fashion-cartoon-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    color: #2B2D42;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+/* 卡片内容 */
+.fashion-cartoon-content {
+    padding: 15px;
+    position: relative;
+}
+
+/* 卡片描述 */
+.fashion-cartoon-description {
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* 卡片底部 */
+.fashion-cartoon-footer {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-top: 2px dashed #e9ecef;
+    display: flex;
+    justify-content: center;
+}
+
+/* 卡通按钮 */
+.cartoon-fashion-btn {
+    background-color: #FFD166;
+    border: 2px solid #2B2D42;
+    border-radius: 12px;
+    color: #2B2D42;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 0.9rem;
+    padding: 6px 15px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 0 #2B2D42;
+    transform: translateY(0);
+}
+
+.cartoon-fashion-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #2B2D42;
+    background-color: #FFDA85;
+}
+
+.cartoon-fashion-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #2B2D42;
+}
+
+/* 卡通徽章 */
+.cartoon-fashion-badge {
+    background: #FFD166;
+    color: #2B2D42;
+    border: 2px solid #2B2D42;
+    border-radius: 20px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-weight: bold;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    display: inline-block;
+    box-shadow: 2px 2px 0 #2B2D42;
+    transform: rotate(-2deg);
+    margin-right: 5px;
+}
+
+/* 不同风格的徽章颜色 */
+.cartoon-style-minimalist {
+    background: #f8f9fa;
+    color: #212529;
+}
+
+.cartoon-style-streetwear {
+    background: #6c757d;
+    color: white;
+}
+
+.cartoon-style-vintage {
+    background: #d63384;
+    color: white;
+}
+
+.cartoon-style-korean {
+    background: #fd7e14;
+    color: white;
+}
+
+.cartoon-style-sporty {
+    background: #20c997;
+    color: white;
+}
+
+.cartoon-style-business {
+    background: #0d6efd;
+    color: white;
+}
+
+/* 卡通筛选区域 */
+.cartoon-filter-card {
+    background-color: #fff;
+    border: 3px solid #2B2D42;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 #2B2D42;
+    margin-bottom: 20px;
+}
+
+.cartoon-filter-header {
+    background: linear-gradient(to right, #118AB2, #06D6A0);
+    color: #fff;
+    padding: 10px 15px;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 1.2rem;
+    border-bottom: 3px solid #2B2D42;
+}
+
+.cartoon-filter-body {
+    padding: 15px;
+}
+
+.cartoon-filter-title {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #2B2D42;
+    border-bottom: 2px dashed #e9ecef;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* 卡通复选框 */
+.cartoon-checkbox {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.cartoon-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.cartoon-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #f8f9fa;
+    border: 2px solid #2B2D42;
+    border-radius: 5px;
+}
+
+.cartoon-checkbox:hover input ~ .cartoon-checkmark {
+    background-color: #FFD166;
+}
+
+.cartoon-checkbox input:checked ~ .cartoon-checkmark {
+    background-color: #06D6A0;
+}
+
+.cartoon-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.cartoon-checkbox input:checked ~ .cartoon-checkmark:after {
+    display: block;
+}
+
+.cartoon-checkbox .cartoon-checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* 卡通单选框 */
+.cartoon-radio {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.cartoon-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.cartoon-radio-mark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #f8f9fa;
+    border: 2px solid #2B2D42;
+    border-radius: 50%;
+}
+
+.cartoon-radio:hover input ~ .cartoon-radio-mark {
+    background-color: #FFD166;
+}
+
+.cartoon-radio input:checked ~ .cartoon-radio-mark {
+    background-color: #06D6A0;
+}
+
+.cartoon-radio-mark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.cartoon-radio input:checked ~ .cartoon-radio-mark:after {
+    display: block;
+}
+
+.cartoon-radio .cartoon-radio-mark:after {
+    top: 5px;
+    left: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+}
+
+/* 卡通选项卡 */
+.cartoon-tabs .nav-link {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #6c757d;
+    border: 2px solid transparent;
+    border-radius: 10px 10px 0 0;
+    padding: 8px 15px;
+    margin-right: 5px;
+    transition: all 0.3s ease;
+}
+
+.cartoon-tabs .nav-link:hover {
+    color: #2B2D42;
+    background-color: rgba(255, 209, 102, 0.2);
+}
+
+.cartoon-tabs .nav-link.active {
+    color: #2B2D42;
+    background-color: #FFD166;
+    border-color: #2B2D42;
+    border-bottom-color: transparent;
+    font-weight: bold;
+    box-shadow: 2px -2px 0 #2B2D42;
+}
+
+/* 卡通图片容器 */
+.fashion-cartoon-image {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    border-bottom: 2px dashed #e9ecef;
+}
+
+.fashion-cartoon-image::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border: 2px solid #2B2D42;
+    border-radius: 50%;
+    transform: rotate(-10deg);
+    box-shadow: 2px 2px 0 #2B2D42;
+    z-index: 2;
+}
+
+.fashion-cartoon-image-placeholder {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    color: #2B2D42;
+    font-size: 3rem;
+    border-bottom: 2px dashed #e9ecef;
+}
+
+/* 卡通单品列表 */
+.fashion-cartoon-items {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #2B2D42;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    position: relative;
+}
+
+.fashion-cartoon-items::before {
+    content: '单品';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: #FFD166;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    border: 2px solid #2B2D42;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+
+.fashion-cartoon-items p {
+    margin-bottom: 4px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.fashion-cartoon-items p::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #06D6A0;
+    font-weight: bold;
+}
+
+/* 场合图标 */
+.cartoon-occasion-icon {
+    font-size: 1.2rem;
+    margin-right: 5px;
+    animation: bounce 2s infinite;
+}
+
+.cartoon-occasion-casual { color: #0dcaf0; }
+.cartoon-occasion-formal { color: #212529; }
+.cartoon-occasion-party { color: #dc3545; }
+.cartoon-occasion-work { color: #0d6efd; }
+
+/* 卡通标题 */
+.cartoon-page-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    color: #2B2D42;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 0 #FFD166;
+}
+
+.cartoon-page-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #555;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+/* 卡通导航栏 */
+.cartoon-navbar {
+    background: linear-gradient(to right, #2B2D42, #073B4C);
+    padding: 10px 0;
+    border-bottom: 3px solid #FFD166;
+}
+
+.cartoon-navbar-brand {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    color: #fff;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.cartoon-navbar-brand img {
+    height: 40px;
+    margin-right: 10px;
+    filter: drop-shadow(2px 2px 0 #FFD166);
+}
+
+.cartoon-nav-link {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.cartoon-nav-link:hover {
+    background-color: rgba(255, 209, 102, 0.2);
+    color: #FFD166;
+    transform: translateY(-3px);
+}
+
+.cartoon-nav-link.active {
+    background-color: #FFD166;
+    color: #2B2D42;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 卡通天气卡片 */
+.cartoon-weather-card {
+    background-color: #fff;
+    border: 3px solid #2B2D42;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 #2B2D42;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.cartoon-weather-icon {
+    font-size: 2.5rem;
+    color: #118AB2;
+    animation: float 3s ease-in-out infinite;
+}
+
+.cartoon-weather-loading {
+    font-size: 2.5rem;
+    color: #FFD166;
+    animation: spin 2s linear infinite;
+}
+
+/* 动画 */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-3px);}
+    60% {transform: translateY(-1px);}
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+.float {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spin {
+    animation: spin 2s linear infinite;
+}
+
+/* 卡通模态框 */
+.cartoon-modal .modal-content {
+    border: 3px solid #2B2D42;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.cartoon-modal .modal-header {
+    background: linear-gradient(to right, #118AB2, #06D6A0);
+    color: #fff;
+    border-bottom: 3px solid #2B2D42;
+}
+
+.cartoon-modal .modal-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 1.5rem;
+}
+
+.cartoon-modal .modal-footer {
+    border-top: 2px dashed #e9ecef;
+}
+
+/* 卡通页脚 */
+.cartoon-footer {
+    background-color: #FFD166;
+    border-top: 3px solid #2B2D42;
+    padding: 15px 0;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #2B2D42;
+    text-align: center;
+}
+
+/* 底部导航 */
+.cartoon-footer-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border-top: 3px solid #2B2D42;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.cartoon-footer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #2B2D42;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    transition: all 0.3s ease;
+}
+
+.cartoon-footer-item:hover {
+    transform: translateY(-5px);
+    color: #06D6A0;
+}
+
+.cartoon-footer-item.active {
+    color: #EF476F;
+}
+
+.cartoon-footer-item i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+/* 卡通装饰元素 */
+.fashion-decoration {
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* 无数据提示 */
+.no-data-container {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    border: 2px dashed #e9ecef;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.no-data-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+}
+
+.no-data-text {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #6c757d;
+    font-size: 1.2rem;
+} 

@@ -1,0 +1,533 @@
+/* 邮驿四方 - 全局样式表 */
+
+:root {
+    --ginkgo-gold: #FFD700;
+    --deep-blue: #2C3E50;
+    --ivory-white: #F5F5F5;
+    --brick-gray: #7F8C8D;
+    
+    /* 模块颜色 */
+    --study-color: #3498db;     /* 学习 - 蓝色 */
+    --food-color: #e74c3c;      /* 美食 - 红色 */
+    --travel-color: #2ecc71;    /* 行程 - 绿色 */
+    --fashion-color: #9b59b6;   /* 穿搭 - 紫色 */
+}
+
+/* 基础样式 */
+body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background-color: var(--ivory-white);
+    color: var(--deep-blue);
+}
+
+/* 导航栏样式 */
+.navbar {
+    background-color: var(--deep-blue) !important;
+    padding: 0.5rem 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.8rem;
+    color: var(--ginkgo-gold) !important;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link.active {
+    color: var(--ginkgo-gold);
+}
+
+/* 卡片样式 */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-weight: 600;
+    color: var(--deep-blue);
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+.btn-primary:hover {
+    background-color: #1a2530;
+    border-color: #1a2530;
+}
+
+.btn-outline-primary {
+    color: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+/* 模块特定样式 */
+.module-study {
+    border-top: 4px solid var(--study-color);
+}
+
+.module-food {
+    border-top: 4px solid var(--food-color);
+}
+
+.module-travel {
+    border-top: 4px solid var(--travel-color);
+}
+
+.module-fashion {
+    border-top: 4px solid var(--fashion-color);
+}
+
+/* 图标容器 */
+.icon-container {
+    width: 50px;
+    height: 50px;
+    background-color: var(--deep-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-container i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* 页面标题样式 */
+.page-title {
+    color: var(--deep-blue);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.page-subtitle {
+    color: var(--brick-gray);
+    font-size: 0.95rem;
+}
+
+/* 重置Bootstrap部分样式 */
+.form-control:focus {
+    border-color: var(--deep-blue);
+    box-shadow: 0 0 0 0.25rem rgba(44, 62, 80, 0.25);
+}
+
+/* 页脚样式 */
+.footer {
+    background-color: var(--deep-blue);
+    color: var(--ivory-white);
+    padding: 20px 0;
+    margin-top: 50px;
+}
+
+.footer a {
+    color: var(--ginkgo-gold);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* 工具样式 */
+.text-gold {
+    color: var(--ginkgo-gold) !important;
+}
+
+.bg-deep-blue {
+    background-color: var(--deep-blue) !important;
+}
+
+.border-study {
+    border-color: var(--study-color) !important;
+}
+
+.border-food {
+    border-color: var(--food-color) !important;
+}
+
+.border-travel {
+    border-color: var(--travel-color) !important;
+}
+
+.border-fashion {
+    border-color: var(--fashion-color) !important;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    
+    .navbar-brand img {
+        height: 30px;
+    }
+}
+
+/* Common Styles */
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.category-item {
+    cursor: pointer;
+}
+
+.category-item:hover, .category-item.active {
+    background-color: #e9ecef;
+}
+
+/* Study Notes Styles */
+.note-card {
+    height: 100%;
+}
+
+.note-card .card-title {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.note-card .card-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Food Recommendation Styles */
+.food-card {
+    border-top: 4px solid #0d6efd;
+}
+
+.food-card .card-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.rating-stars {
+    color: #ffc107;
+}
+
+.food-card .cuisine-badge {
+    text-transform: capitalize;
+}
+
+.popularity-badge .badge {
+    font-size: 0.8rem;
+}
+
+.food-card .card-footer {
+    padding: 0.5rem 1rem;
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.food-card .description-text {
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+.food-filter-section {
+    position: sticky;
+    top: 20px;
+}
+
+/* 每种菜系对应不同的颜色标记 */
+.food-card[data-cuisine="chinese"] {
+    border-top-color: #dc3545; /* 红色 */
+}
+
+.food-card[data-cuisine="japanese"] {
+    border-top-color: #198754; /* 绿色 */
+}
+
+.food-card[data-cuisine="korean"] {
+    border-top-color: #0dcaf0; /* 蓝色 */
+}
+
+.food-card[data-cuisine="western"] {
+    border-top-color: #6f42c1; /* 紫色 */
+}
+
+.food-card[data-cuisine="other"] {
+    border-top-color: #fd7e14; /* 橙色 */
+}
+
+/* Travel Itinerary Styles */
+.itinerary-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.itinerary-duration {
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+/* Fashion Outfit Styles */
+.outfit-card img {
+    height: 250px;
+    object-fit: cover;
+}
+
+.outfit-badges {
+    margin-bottom: 10px;
+}
+
+/* Modal Styling */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+    .food-card img, .itinerary-card img, .outfit-card img {
+        height: 180px;
+    }
+}
+
+/* General styles */
+body {
+    background-color: #f8f9fa;
+}
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.btn-card {
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 150px; /* Fixed height for consistent button size */
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    transition: transform 0.2s;
+}
+.btn-card:hover {
+    transform: translateY(-5px);
+}
+.btn-study-today {
+    background-color: #6a6aff; /* Example color from screenshot */
+}
+.btn-fun-game {
+    background-color: #4CAF50; /* Example color from screenshot */
+}
+.btn-study-progress {
+    background-color: #9C27B0; /* Example color from screenshot */
+}
+.progress-card {
+    background: linear-gradient(135deg, #f0f8ff, #e6f7ff); /* Light blue gradient */
+    padding: 30px;
+    text-align: center;
+    color: #333;
+}
+.progress-bar-custom {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #ddd;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background-color: #8A2BE2; /* Purple */
+    width: 25%; /* Example width */
+}
+.stats-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+.stats-item img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 5px;
+}
+.footer-icons img {
+    width: 30px;
+    margin: 0 5px;
+}
+/* Word Learning Page Styles */
+.word-card-container {
+    perspective: 1000px; /* For 3D flip effect */
+    margin-top: 50px;
+}
+.word-card {
+    width: 100%;
+    height: 300px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: white;
+}
+.word-card.flipped {
+    transform: rotateY(180deg);
+}
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 15px;
+}
+.card-front {
+    z-index: 2;
+    transform: rotateY(0deg);
+    font-size: 3em;
+    font-weight: bold;
+}
+.card-back {
+    transform: rotateY(180deg);
+    font-size: 1.5em;
+    text-align: center;
+}
+.card-back .details {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #666;
+}
+.card-back .details img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.pronunciation-btn {
+    background-color: #8A2BE2; /* Purple */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+.pronunciation-btn:hover {
+    opacity: 0.9;
+}
+.nav-buttons button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-weight: bold;
+}
+.nav-buttons button.complete {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+.top-nav-buttons .btn {
+    border-radius: 20px;
+}
+
+/* Loading Animation Styles */
+.loading-container {
+    display: none;
+    text-align: center;
+    padding: 10px;
+}
+
+.loading-dots {
+    display: inline-block;
+}
+
+.loading-dots span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #007bff;
+    margin: 0 3px;
+    animation: loading 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes loading {
+    0%, 80%, 100% { 
+        transform: scale(0);
+    } 
+    40% { 
+        transform: scale(1.0);
+    }
+} 

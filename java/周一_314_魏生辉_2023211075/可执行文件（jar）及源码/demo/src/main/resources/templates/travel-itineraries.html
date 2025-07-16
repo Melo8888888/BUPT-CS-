@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行程推荐 - 邮驿四方</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+    <link rel="stylesheet" th:href="@{/static/css/fashion-cartoon.css}">
+    <style>
+        /* 行程卡片样式 */
+        .itinerary-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border-top: 4px solid #2ecc71;
+        }
+        
+        .itinerary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .itinerary-card .card-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .itinerary-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .itinerary-duration {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .destination-badge {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            background-color: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            z-index: 1;
+        }
+        
+        .budget-info {
+            color: #2C3E50;
+            font-weight: 600;
+        }
+        
+        /* 地图容器 */
+        #mapContainer {
+            height: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .route-info-card {
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .route-step {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+        
+        .route-step:last-child {
+            border-bottom: none;
+        }
+        
+        .route-step:before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #2ecc71;
+            z-index: 1;
+        }
+        
+        .route-step:after {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: 25px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background-color: #e0e0e0;
+            z-index: 0;
+        }
+        
+        .route-step:last-child:after {
+            display: none;
+        }
+        
+        .route-instruction {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .route-distance {
+            font-size: 0.8rem;
+            color: #7F8C8D;
+        }
+        
+        /* 导航表单 */
+        .navigation-form {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: relative;
+        }
+        
+        .form-icon {
+            position: absolute;
+            left: 15px;
+            top: 13px;
+            color: #2ecc71;
+        }
+        
+        .destination-input {
+            padding-left: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            height: 48px;
+        }
+        
+        .destination-input:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
+        }
+        
+        .route-type-btn {
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #7F8C8D;
+            transition: all 0.3s ease;
+        }
+        
+        .route-type-btn.active {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+        
+        .route-type-btn i {
+            font-size: 1rem;
+            margin-right: 5px;
+        }
+        
+        .destination-select-btn {
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #7F8C8D;
+            transition: all 0.3s ease;
+        }
+        
+        .destination-select-btn.active {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+        
+        /* 图片加载失败时的样式 */
+        .img-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            min-height: 40px;
+        }
+        
+        .img-fallback i {
+            font-size: 1.5rem;
+        }
+        
+        /* 导航栏logo样式 */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            font-size: 1.8rem;
+            color: #FFD700;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg cartoon-navbar">
+        <div class="container">
+            <a class="cartoon-navbar-brand" href="/">
+                <i class="fas fa-map-marker-alt"></i>
+                邮驿四方
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/study-notes}">
+                            <i class="fas fa-book-open me-1 float"></i>学习笔记
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/food-recommendations}">
+                            <i class="fas fa-utensils me-1 float"></i>美食推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link active" th:href="@{/travel-itineraries}">
+                            <i class="fas fa-compass me-1 bounce"></i>行程推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/fashion-outfits}">
+                            <i class="fas fa-tshirt me-1 float"></i>穿搭推荐
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- 标题卡片 -->
+        <div class="card shadow-sm mb-4 module-travel">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="icon-container">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="page-title">行程推荐</h2>
+                        <p class="page-subtitle">根据您的喜好，定制专属旅行路线。</p>
+                    </div>
+                    <div class="ms-auto">
+                        <!-- New AI Recommendation Button -->
+                        <button class="btn btn-success" id="aiRecommendationBtn" data-bs-toggle="modal" data-bs-target="#aiRecommendationModal">
+                            ✨ AI出行推荐
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Recommendation Modal -->
+        <div class="modal fade" id="aiRecommendationModal" tabindex="-1" aria-labelledby="aiRecommendationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="aiRecommendationModalLabel">✨ AI出行推荐 ✨</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="fs-5 mb-3" id="aiRecommendationText"></p>
+                        <p class="fst-italic">希望您旅途愉快！</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 导航路线规划 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>路线规划</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="navigation-form mb-4">
+                            <form id="routePlanForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 position-relative">
+                                        <i class="fas fa-map-marker-alt form-icon"></i>
+                                        <input type="text" class="form-control origin-input" id="origin" value="北京邮电大学(西土城路校区)" readonly>
+                                    </div>
+                                
+                                    <div class="col-md-6 position-relative">
+                                        <i class="fas fa-flag-checkered form-icon"></i>
+                                        <select class="form-select destination-input" id="destination">
+                                            <option value="" selected disabled>请选择目的地...</option>
+                                            <option value="北京西站">北京西站</option>
+                                            <option value="天安门广场">天安门广场</option>
+                                            <option value="故宫博物院">故宫博物院</option>
+                                            <option value="北京大学">北京大学</option>
+                                            <option value="798艺术区">798艺术区</option>
+                                            <option value="王府井步行街">王府井步行街</option>
+                                            <option value="三里屯太古里">三里屯太古里</option>
+                                            <option value="中国国家博物馆">中国国家博物馆</option>
+                                            <option value="颐和园">颐和园</option>
+                                            <option value="圆明园">圆明园</option>
+                                            <option value="鸟巢(国家体育场)">鸟巢(国家体育场)</option>
+                                            <option value="水立方(国家游泳中心)">水立方(国家游泳中心)</option>
+                                            <option value="清华大学">清华大学</option>
+                                            <option value="北京动物园">北京动物园</option>
+                                            <option value="长城(八达岭)">长城(八达岭)</option>
+                                            <option value="世界公园">世界公园</option>
+                                            <option value="朝阳公园">朝阳公园</option>
+                                            <option value="什刹海">什刹海</option>
+                                            <option value="南锣鼓巷">南锣鼓巷</option>
+                                            <option value="后海">后海</option>
+                                            <option value="北海公园">北海公园</option>
+                                            <option value="香山公园">香山公园</option>
+                                            <option value="首都博物馆">首都博物馆</option>
+                                            <option value="北京欢乐谷">北京欢乐谷</option>
+                                            <option value="天坛公园">天坛公园</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- 热门目的地快速选择 -->
+                                <div class="hot-destinations mb-3">
+                                    <h6 class="text-muted mb-2">热门目的地: </h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary destination-select-btn" data-destination="天安门广场">天安门广场</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary destination-select-btn" data-destination="故宫博物院">故宫博物院</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary destination-select-btn" data-destination="北京西站">北京西站</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary destination-select-btn" data-destination="北京大学">北京大学</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary destination-select-btn" data-destination="颐和园">颐和园</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary destination-select-btn" data-destination="鸟巢(国家体育场)">鸟巢</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mt-3">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search me-1"></i> 查询路线
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="row" id="routeResultContainer" style="display: none;">
+                            <!-- 地图容器 -->
+                            <div class="col-md-8 mb-4">
+                                <div id="mapContainer"></div>
+                            </div>
+                            
+                            <!-- 路线信息 -->
+                            <div class="col-md-4">
+                                <div class="card route-info-card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>路线信息</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="mb-0">总距离</h6>
+                                            <span class="badge bg-primary" id="totalDistance">0 公里</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="mb-0">预计时间</h6>
+                                            <span class="badge bg-info" id="totalDuration">0 分钟</span>
+                                        </div>
+                                        
+                                        <hr>
+                                        
+                                        <h6 class="mb-3">详细指引</h6>
+                                        <div id="routeSteps" class="route-steps">
+                                            <!-- 步骤将动态添加 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 热门行程推荐 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>北京景点信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="lead">本应用提供从北京邮电大学出发，到北京市内主要景点的路线规划服务。</p>
+                        <p>路线规划服务说明：</p>
+                        <ul>
+                            <li><strong>一键导航</strong>：为您提供最优路线，包含详细的路线指引。适合到达距离较近的景点，让您在更好地体验城市风光。</li>
+                        </ul>
+                        <p>选择您想前往的目的地，然后点击"查询路线"即可获取详细的步行路线规划。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加底部导航栏 -->
+    <div class="cartoon-footer-nav">
+        <a th:href="@{/study-notes}" class="cartoon-footer-item">
+            <i class="fas fa-scroll"></i>
+            <span>学习</span>
+        </a>
+        <a th:href="@{/food-recommendations}" class="cartoon-footer-item">
+            <i class="fas fa-utensils"></i>
+            <span>美食</span>
+        </a>
+        <a th:href="@{/travel-itineraries}" class="cartoon-footer-item active">
+            <i class="fas fa-compass bounce"></i>
+            <span>行程</span>
+        </a>
+        <a th:href="@{/fashion-outfits}" class="cartoon-footer-item">
+            <i class="fas fa-tshirt"></i>
+            <span>穿搭</span>
+        </a>
+    </div>
+
+    <footer class="cartoon-footer">
+        <div class="container text-center">
+            <p>邮驿四方 &copy; 2025 - 为您的生活提供方向</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/static/js/fashion-cartoon.js}"></script>
+    
+    <!-- 高德地图API回调函数 -->
+    <script>
+        // 地图API加载完成后的回调
+        function onAMapLoaded() {
+            console.log('高德地图API加载完成');
+            if (typeof window.initMapApplication === 'function') {
+                window.initMapApplication();
+            } else {
+                console.log('等待应用初始化...');
+                setTimeout(function() {
+                    if (typeof window.initMapApplication === 'function') {
+                        window.initMapApplication();
+                    } else {
+                        console.error('地图应用初始化函数不存在');
+                    }
+                }, 1000);
+            }
+        }
+        
+        // 全局错误处理
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('JavaScript错误: ', message, ' at ', source, ':', lineno, ':', colno);
+            if (error && error.stack) {
+                console.error('错误堆栈: ', error.stack);
+            }
+            
+            // 在页面显示错误信息（方便调试）
+            var errorDiv = document.createElement('div');
+            errorDiv.className = 'alert alert-danger error-message';
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.bottom = '10px';
+            errorDiv.style.right = '10px';
+            errorDiv.style.zIndex = '9999';
+            errorDiv.style.maxWidth = '500px';
+            errorDiv.innerHTML = '<strong>JavaScript错误:</strong><br>' + message + '<br>at ' + source + ':' + lineno + ':' + colno;
+            document.body.appendChild(errorDiv);
+            
+            // 5秒后自动移除
+            setTimeout(function() {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+            
+            return false; // 让错误继续传播到控制台
+        };
+    </script>
+    
+    <!-- 高德地图API安全配置 -->
+    <script>
+        window._AMapSecurityConfig = {
+            securityJsCode:'8ec6bf9c4d4bf9786a2b87aedf4e44c1',
+        }
+    </script>
+    
+    <!-- 高德地图API -->
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=5521649459fbb399758e6799fdfa328b&plugin=AMap.Walking,AMap.Driving,AMap.Transfer,AMap.Riding,AMap.Geocoder&callback=onAMapLoaded"></script>
+    
+    <!-- 路线规划JS -->
+    <script th:src="@{/static/js/travel-route.js}"></script>
+</body>
+</html> 

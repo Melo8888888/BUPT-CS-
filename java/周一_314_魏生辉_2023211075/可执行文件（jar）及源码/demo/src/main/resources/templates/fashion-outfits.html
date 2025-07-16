@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>穿搭推荐 - 邮驿四方</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+    <link rel="stylesheet" th:href="@{/static/css/fashion-cartoon.css}">
+    <link href="/static/css/fashion-cartoon.css" rel="stylesheet">
+    <style>
+        /* 穿搭卡片样式 */
+        .outfit-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border-top: 4px solid #6c757d;
+        }
+        .outfit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        /* 针对不同场合的颜色标识 */
+        .outfit-card[data-occasion="casual"] {
+            border-top-color: #0dcaf0; /* 蓝色 */
+        }
+        .outfit-card[data-occasion="formal"] {
+            border-top-color: #212529; /* 黑色 */
+        }
+        .outfit-card[data-occasion="party"] {
+            border-top-color: #dc3545; /* 红色 */
+        }
+        .outfit-card[data-occasion="work"] {
+            border-top-color: #0d6efd; /* 深蓝色 */
+        }
+        
+        /* 针对不同风格的样式 */
+        .outfit-style-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+        }
+        
+        /* 卡片内容样式 */
+        .outfit-card .card-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        .outfit-card .description-text {
+            height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .outfit-items {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        .outfit-items p {
+            margin-bottom: 4px;
+        }
+        
+        /* 过滤器样式 */
+        .filter-title {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        
+        /* 场合图标 */
+        .occasion-icon {
+            font-size: 1.2rem;
+            margin-right: 5px;
+        }
+        .occasion-casual .occasion-icon { color: #0dcaf0; }
+        .occasion-formal .occasion-icon { color: #212529; }
+        .occasion-party .occasion-icon { color: #dc3545; }
+        .occasion-work .occasion-icon { color: #0d6efd; }
+        
+        /* 风格标签 */
+        .style-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-right: 4px;
+        }
+        .style-minimalist { background-color: #f8f9fa; color: #212529; }
+        .style-streetwear { background-color: #6c757d; color: white; }
+        .style-vintage { background-color: #d63384; color: white; }
+        .style-korean { background-color: #fd7e14; color: white; }
+        .style-sporty { background-color: #20c997; color: white; }
+        .style-business { background-color: #0d6efd; color: white; }
+        
+        /* 筛选选项卡样式 */
+        .filter-tabs .nav-link {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .filter-tabs .nav-link.active {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+        
+        /* 穿搭图片样式 */
+        .outfit-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .outfit-image-placeholder {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            color: #adb5bd;
+            font-size: 2rem;
+        }
+        
+        /* 筛选器激活状态 */
+        .filter-checkbox-label.active {
+            background-color: #e7f1ff;
+            border-radius: 4px;
+            padding: 2px 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg cartoon-navbar">
+        <div class="container">
+            <a class="cartoon-navbar-brand" href="/">
+                <img src="https://cdn.pixabay.com/photo/2013/07/13/10/07/banner-156624_1280.png" alt="驿站所指">
+                邮驿四方
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/study-notes}">
+                            <i class="fas fa-book-open me-1 float"></i>学习笔记
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/food-recommendations}">
+                            <i class="fas fa-utensils me-1 float"></i>美食推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/travel-itineraries}">
+                            <i class="fas fa-route me-1 float"></i>行程推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link active" th:href="@{/fashion-outfits}">
+                            <i class="fas fa-tshirt me-1 bounce"></i>穿搭推荐
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- 天气信息卡片 -->
+        <div class="cartoon-weather-card mb-4" id="weatherCard">
+            <div class="card-body d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-spinner fa-pulse fa-2x me-3 cartoon-weather-loading" id="weatherLoadingIcon"></i>
+                    <i class="fas fa-cloud-sun fa-2x me-3 cartoon-weather-icon" id="weatherIcon" style="display:none;"></i>
+                    <div>
+                        <span id="weatherLoading">正在加载天气信息...</span>
+                        <div id="weatherContent" style="display:none;">
+                            <span id="weatherDesc"></span>
+                            <span id="weatherTemp" class="ms-3"></span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group input-group-sm me-2 d-inline-flex" style="width: auto;">
+                        <select class="cartoon-select" id="citySelector" style="width: 100px;">
+                            <option value="beijing" ${currentCity === 'beijing' ? 'selected' : ''}>北京</option>
+                        </select>
+                        <button class="cartoon-fashion-btn" id="changeCityBtn" style="padding: 4px 8px;">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <button class="cartoon-fashion-btn" id="weatherOutfitBtn" style="display:none;">
+                        <i class="fas fa-tshirt me-2 bounce"></i>一键穿搭
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="cartoon-filter-card mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-4">
+                        <div class="fashion-icon pulse">
+                            <i class="fas fa-tshirt" style="font-size: 3rem; color: #EF476F;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="cartoon-page-title mb-2">穿搭推荐</h1>
+                        <p class="cartoon-page-subtitle">根据场合和风格找到适合你的穿搭灵感。从日常休闲到正式场合，总有一款适合你的风格！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="cartoon-filter-card">
+                    <div class="cartoon-filter-header">
+                        <i class="fas fa-filter me-2 bounce"></i>筛选
+                    </div>
+                    <div class="cartoon-filter-body">
+                        <!-- 筛选选项卡 -->
+                        <ul class="nav nav-tabs cartoon-tabs mb-3" id="filterTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-filters" type="button" role="tab" aria-selected="true">全部</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="occasion-tab" data-bs-toggle="tab" data-bs-target="#occasion-filters" type="button" role="tab" aria-selected="false">场合</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="style-tab" data-bs-toggle="tab" data-bs-target="#style-filters" type="button" role="tab" aria-selected="false">风格</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="filterTabContent">
+                            <!-- 全部筛选 -->
+                            <div class="tab-pane fade show active" id="all-filters" role="tabpanel" aria-labelledby="all-tab">
+                                <h6 class="cartoon-filter-title">场合</h6>
+                                <div class="mb-3">
+                                    <label class="cartoon-checkbox occasion-casual">
+                                        <input class="occasion-filter" type="checkbox" value="casual" id="casualOccasion" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        <i class="fas fa-coffee cartoon-occasion-icon cartoon-occasion-casual"></i>休闲
+                                    </label>
+                                    <label class="cartoon-checkbox occasion-formal">
+                                        <input class="occasion-filter" type="checkbox" value="formal" id="formalOccasion" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        <i class="fas fa-user-tie cartoon-occasion-icon cartoon-occasion-formal"></i>正式
+                                    </label>
+                                    <label class="cartoon-checkbox occasion-party">
+                                        <input class="occasion-filter" type="checkbox" value="party" id="partyOccasion" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        <i class="fas fa-glass-cheers cartoon-occasion-icon cartoon-occasion-party"></i>派对
+                                    </label>
+                                    <label class="cartoon-checkbox occasion-work">
+                                        <input class="occasion-filter" type="checkbox" value="work" id="workOccasion" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        <i class="fas fa-briefcase cartoon-occasion-icon cartoon-occasion-work"></i>工作
+                                    </label>
+                                </div>
+                                
+                                <h6 class="cartoon-filter-title">风格</h6>
+                                <div class="mb-3">
+                                    <label class="cartoon-checkbox">
+                                        <input class="style-filter" type="checkbox" value="minimalist" id="minimalistStyle" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        极简
+                                    </label>
+                                    <label class="cartoon-checkbox">
+                                        <input class="style-filter" type="checkbox" value="streetwear" id="streetwearStyle" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        街头
+                                    </label>
+                                    <label class="cartoon-checkbox">
+                                        <input class="style-filter" type="checkbox" value="vintage" id="vintageStyle" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        复古
+                                    </label>
+                                    <label class="cartoon-checkbox">
+                                        <input class="style-filter" type="checkbox" value="korean" id="koreanStyle" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        韩风
+                                    </label>
+                                    <label class="cartoon-checkbox">
+                                        <input class="style-filter" type="checkbox" value="sporty" id="sportyStyle" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        运动
+                                    </label>
+                                    <label class="cartoon-checkbox">
+                                        <input class="style-filter" type="checkbox" value="business" id="businessStyle" checked>
+                                        <span class="cartoon-checkmark"></span>
+                                        商务
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- 仅场合筛选 -->
+                            <div class="tab-pane fade" id="occasion-filters" role="tabpanel" aria-labelledby="occasion-tab">
+                                <h6 class="cartoon-filter-title">选择场合</h6>
+                                <div class="mb-3">
+                                    <label class="cartoon-radio occasion-casual">
+                                        <input class="occasion-only-filter" type="radio" name="occasionOnly" value="all" id="allOccasions" checked>
+                                        <span class="cartoon-radio-mark"></span>
+                                        <i class="fas fa-globe cartoon-occasion-icon cartoon-occasion-casual"></i>全部场合
+                                    </label>
+                                    <label class="cartoon-radio occasion-casual">
+                                        <input class="occasion-only-filter" type="radio" name="occasionOnly" value="casual" id="onlyCasual">
+                                        <span class="cartoon-radio-mark"></span>
+                                        <i class="fas fa-coffee cartoon-occasion-icon cartoon-occasion-casual"></i>休闲
+                                    </label>
+                                    <label class="cartoon-radio occasion-formal">
+                                        <input class="occasion-only-filter" type="radio" name="occasionOnly" value="formal" id="onlyFormal">
+                                        <span class="cartoon-radio-mark"></span>
+                                        <i class="fas fa-user-tie cartoon-occasion-icon cartoon-occasion-formal"></i>正式
+                                    </label>
+                                    <label class="cartoon-radio occasion-party">
+                                        <input class="occasion-only-filter" type="radio" name="occasionOnly" value="party" id="onlyParty">
+                                        <span class="cartoon-radio-mark"></span>
+                                        <i class="fas fa-glass-cheers cartoon-occasion-icon cartoon-occasion-party"></i>派对
+                                    </label>
+                                    <label class="cartoon-radio occasion-work">
+                                        <input class="occasion-only-filter" type="radio" name="occasionOnly" value="work" id="onlyWork">
+                                        <span class="cartoon-radio-mark"></span>
+                                        <i class="fas fa-briefcase cartoon-occasion-icon cartoon-occasion-work"></i>工作
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- 仅风格筛选 -->
+                            <div class="tab-pane fade" id="style-filters" role="tabpanel" aria-labelledby="style-tab">
+                                <h6 class="cartoon-filter-title">选择风格</h6>
+                                <div class="mb-3">
+                                    <label class="cartoon-radio">
+                                        <input class="style-only-filter" type="radio" name="styleOnly" value="all" id="allStyles" checked>
+                                        <span class="cartoon-radio-mark"></span>
+                                        全部风格
+                                    </label>
+                                    <label class="cartoon-radio">
+                                        <input class="style-only-filter" type="radio" name="styleOnly" value="minimalist" id="onlyMinimalist">
+                                        <span class="cartoon-radio-mark"></span>
+                                        极简
+                                    </label>
+                                    <label class="cartoon-radio">
+                                        <input class="style-only-filter" type="radio" name="styleOnly" value="streetwear" id="onlyStreetwear">
+                                        <span class="cartoon-radio-mark"></span>
+                                        街头
+                                    </label>
+                                    <label class="cartoon-radio">
+                                        <input class="style-only-filter" type="radio" name="styleOnly" value="vintage" id="onlyVintage">
+                                        <span class="cartoon-radio-mark"></span>
+                                        复古
+                                    </label>
+                                    <label class="cartoon-radio">
+                                        <input class="style-only-filter" type="radio" name="styleOnly" value="korean" id="onlyKorean">
+                                        <span class="cartoon-radio-mark"></span>
+                                        韩风
+                                    </label>
+                                    <label class="cartoon-radio">
+                                        <input class="style-only-filter" type="radio" name="styleOnly" value="sporty" id="onlySporty">
+                                        <span class="cartoon-radio-mark"></span>
+                                        运动
+                                    </label>
+                                    <label class="cartoon-radio">
+                                        <input class="style-only-filter" type="radio" name="styleOnly" value="business" id="onlyBusiness">
+                                        <span class="cartoon-radio-mark"></span>
+                                        商务
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="cartoon-fashion-btn w-100 mt-3" id="applyFiltersBtn">
+                            <i class="fas fa-check me-1"></i> 应用筛选
+                        </button>
+                        
+                        <button class="cartoon-fashion-btn w-100 mt-2" style="background-color: #f8f9fa;" id="resetFiltersBtn">
+                            <i class="fas fa-redo me-1"></i> 重置筛选
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div id="fashionOutfitsList" class="row">
+                    <!-- Thymeleaf直接显示穿搭数据 -->
+                    <div th:if="${outfitList != null && !outfitList.empty}" class="row w-100">
+                        <div th:each="outfit : ${outfitList}" class="col-md-6 col-lg-4 mb-4 outfit-item" 
+                             th:attr="data-occasion=${outfit.occasion}, data-style=${outfit.style}">
+                            <div class="fashion-cartoon-card h-100" th:attr="data-occasion=${outfit.occasion}">
+                                <!-- 穿搭图片 -->
+                                <div th:if="${outfit.imageUrl != null && outfit.imageUrl != ''}" 
+                                     class="fashion-cartoon-image" th:style="'background-image: url(' + ${outfit.imageUrl} + ');'">
+                                </div>
+                                <div th:if="${outfit.imageUrl == null || outfit.imageUrl == ''}" class="fashion-cartoon-image-placeholder">
+                                    <i th:class="${outfit.occasion == 'casual' ? 'fas fa-coffee' : 
+                                              (outfit.occasion == 'formal' ? 'fas fa-user-tie' : 
+                                              (outfit.occasion == 'party' ? 'fas fa-glass-cheers' : 'fas fa-briefcase'))}"></i>
+                                </div>
+                                
+                                <div class="outfit-style-badge">
+                                    <span th:class="${'cartoon-fashion-badge cartoon-style-' + outfit.style}" 
+                                          th:text="${outfit.style == 'minimalist' ? '极简' : 
+                                                   (outfit.style == 'streetwear' ? '街头' : 
+                                                   (outfit.style == 'vintage' ? '复古' : 
+                                                   (outfit.style == 'korean' ? '韩风' : 
+                                                   (outfit.style == 'sporty' ? '运动' : '商务'))))}">风格</span>
+                                </div>
+                                <div class="fashion-cartoon-content">
+                                    <h5 class="fashion-cartoon-title" th:text="${outfit.title}">穿搭标题</h5>
+                                    <div class="mb-3">
+                                        <span th:class="${'cartoon-fashion-badge'}"
+                                              th:text="${outfit.occasion == 'casual' ? '休闲' : 
+                                                       (outfit.occasion == 'formal' ? '正式' : 
+                                                       (outfit.occasion == 'party' ? '派对' : '工作'))}">场合</span>
+                                    </div>
+                                    <p class="fashion-cartoon-description" th:text="${outfit.description}">描述</p>
+                                    <div class="fashion-cartoon-items">
+                                        <p th:each="item : ${#strings.arraySplit(outfit.items, '\\n')}" th:text="${item}">单品</p>
+                                    </div>
+                                    <div class="mt-2 text-end">
+                                        <small class="text-muted"><i class="fas fa-heart me-1"></i>适合您的风格</small>
+                                    </div>
+                                </div>
+                                <!-- 移除查看详情按钮 -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 如果没有数据，显示提示 -->
+                    <div th:if="${outfitList == null || outfitList.empty}" class="col-12 no-data-container">
+                        <div class="no-data-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <p class="no-data-text">暂无穿搭推荐，请添加时尚单品</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 移除查看详情模态框 -->
+
+    <!-- 添加底部导航栏 -->
+    <div class="cartoon-footer-nav">
+        <a th:href="@{/study-notes}" class="cartoon-footer-item">
+            <i class="fas fa-scroll"></i>
+            <span>学习</span>
+        </a>
+        <a th:href="@{/food-recommendations}" class="cartoon-footer-item">
+            <i class="fas fa-utensils"></i>
+            <span>美食</span>
+        </a>
+        <a th:href="@{/travel-itineraries}" class="cartoon-footer-item">
+            <i class="fas fa-compass"></i>
+            <span>行程</span>
+        </a>
+        <a th:href="@{/fashion-outfits}" class="cartoon-footer-item active">
+            <i class="fas fa-tshirt bounce"></i>
+            <span>穿搭</span>
+        </a>
+    </div>
+
+    <footer class="cartoon-footer">
+        <div class="container text-center">
+            <p>邮驿四方 &copy; 2025 - 为您的生活提供方向</p>
+        </div>
+    </footer>
+
+    <!-- 天气穿搭推荐弹窗 -->
+    <div class="modal fade cartoon-modal" id="weatherOutfitModal" tabindex="-1" aria-labelledby="weatherOutfitModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="weatherOutfitModalLabel">
+                        <i class="fas fa-cloud-sun me-2 bounce"></i>今日穿搭推荐
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <span class="cartoon-fashion-badge" id="weatherOutfitBadge">休闲</span>
+                        </div>
+                        <div>
+                            <span id="weatherOutfitReason"></span>
+                        </div>
+                    </div>
+                    <div id="weatherOutfitDetails" class="fashion-cartoon-items">
+                        <!-- 推荐穿搭详情将在这里显示 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cartoon-fashion-btn" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/static/js/fashion-test.js}"></script>
+    <script th:src="@{/static/js/fashion-cartoon.js}"></script>
+    <script>
+    $(document).ready(function() {
+        // 默认筛选
+        applyFilters();
+        
+        // 点击筛选按钮
+        $('#applyFiltersBtn').click(function() {
+            applyFilters();
+        });
+        
+        // 重置筛选
+        $('#resetFiltersBtn').click(function() {
+            resetFilters();
+        });
+        
+        // 单选场合筛选
+        $('.occasion-only-filter').change(function() {
+            if($(this).is(':checked')) {
+                // 切换到仅场合筛选
+                $('#filterTabs a[href="#occasion-filters"]').tab('show');
+                applyFilters();
+            }
+        });
+        
+        // 单选风格筛选
+        $('.style-only-filter').change(function() {
+            if($(this).is(':checked')) {
+                // 切换到仅风格筛选
+                $('#filterTabs a[href="#style-filters"]').tab('show');
+                applyFilters();
+            }
+        });
+        
+        // 切换筛选选项卡时应用筛选
+        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            applyFilters();
+        });
+        
+        // 移除查看详情按钮相关代码
+        
+        // 选中筛选选项时高亮
+        $('.filter-checkbox-label').click(function() {
+            $(this).toggleClass('active');
+        });
+        
+        // 综合筛选函数
+        function applyFilters() {
+            // 获取当前活动的筛选选项卡
+            const activeTab = $('#filterTabs .nav-link.active').attr('id');
+            
+            if(activeTab === 'occasion-tab') {
+                // 仅按场合筛选
+                const selectedOccasion = $('input[name="occasionOnly"]:checked').val();
+                
+                $('.outfit-item').each(function() {
+                    const occasion = $(this).data('occasion');
+                    
+                    if(selectedOccasion === 'all' || occasion === selectedOccasion) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            } 
+            else if(activeTab === 'style-tab') {
+                // 仅按风格筛选
+                const selectedStyle = $('input[name="styleOnly"]:checked').val();
+                
+                $('.outfit-item').each(function() {
+                    const style = $(this).data('style');
+                    
+                    if(selectedStyle === 'all' || style === selectedStyle) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            } 
+            else {
+                // 综合筛选（场合和风格）
+                const selectedOccasions = [];
+                $('.occasion-filter:checked').each(function() {
+                    selectedOccasions.push($(this).val());
+                });
+                
+                const selectedStyles = [];
+                $('.style-filter:checked').each(function() {
+                    selectedStyles.push($(this).val());
+                });
+                
+                $('.outfit-item').each(function() {
+                    const occasion = $(this).data('occasion');
+                    const style = $(this).data('style');
+                    
+                    // 如果场合和风格都匹配，则显示
+                    const showOccasion = selectedOccasions.includes(occasion);
+                    const showStyle = selectedStyles.includes(style);
+                    
+                    if (showOccasion && showStyle) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+            
+            // 检查是否没有结果
+            checkNoResults();
+        }
+        
+        // 重置筛选函数
+        function resetFilters() {
+            // 重置综合筛选
+            $('.occasion-filter, .style-filter').prop('checked', true);
+            
+            // 重置单选项
+            $('#allOccasions, #allStyles').prop('checked', true);
+            
+            // 切换到全部选项卡
+            $('#filterTabs a[href="#all-filters"]').tab('show');
+            
+            // 移除激活状态
+            $('.filter-checkbox-label').removeClass('active');
+            
+            // 应用筛选
+            applyFilters();
+        }
+        
+        // 检查是否没有筛选结果
+        function checkNoResults() {
+            const visibleItems = $('.outfit-item:visible').length;
+            if (visibleItems === 0) {
+                // 如果没有可见的穿搭，显示提示信息
+                if ($('#noResultsMessage').length === 0) {
+                    $('#fashionOutfitsList').append('<div id="noResultsMessage" class="col-12 text-center mt-4"><p>没有找到符合筛选条件的穿搭</p></div>');
+                }
+            } else {
+                // 如果有可见的穿搭，移除提示信息
+                $('#noResultsMessage').remove();
+            }
+        }
+    });
+
+    $(function() {
+        // 全局变量存储天气数据
+        let weatherData = null;
+        let weatherApiRetries = 0;
+        const MAX_RETRIES = 3;
+        let weatherLoadingTimer = null;
+        let currentCity = "beijing"; // 默认城市
+        
+        // 监听城市选择变化
+        $('#citySelector').change(function() {
+            currentCity = $(this).val();
+        });
+        
+        // 点击更改城市按钮
+        $('#changeCityBtn').click(function() {
+            currentCity = $('#citySelector').val();
+            weatherApiRetries = 0; // 重置重试次数
+            fetchWeatherData();
+        });
+        
+        // 获取天气数据函数
+        function fetchWeatherData() {
+            console.log('尝试获取天气数据，城市:', currentCity);
+            
+            // 显示加载状态
+            $('#weatherLoadingIcon').show();
+            $('#weatherIcon').hide();
+            $('#weatherLoading').text(`正在加载${$('#citySelector option:selected').text()}天气信息...`);
+            $('#weatherLoading').show();
+            $('#weatherContent').hide();
+            $('#weatherOutfitBtn').hide();
+            
+            // 设置5秒后显示友好提示
+            clearTimeout(weatherLoadingTimer);
+            weatherLoadingTimer = setTimeout(function() {
+                if (!weatherData) {
+                    $('#weatherLoading').html(`正在加载${$('#citySelector option:selected').text()}天气信息...<br><small class="text-muted">加载时间较长，请耐心等待</small>`);
+                }
+            }, 5000);
+            
+            // 先尝试从后端API获取天气数据
+            fetchWeatherFromBackend();
+        }
+        
+        // 从后端获取天气数据
+        function fetchWeatherFromBackend() {
+            $.ajax({
+                url: '/api/weather/today',
+                method: 'GET',
+                data: { city: currentCity },
+                timeout: 8000, // 增加超时时间
+                success: function(data) {
+                    console.log('从后端获取天气数据成功:', data);
+                    handleWeatherData(data);
+                },
+                error: function(xhr, status, error) {
+                    console.error('从后端获取天气数据失败:', status, error);
+                    
+                    // 尝试直接从高德地图获取数据
+                    fetchWeatherDirectlyFromAMap();
+                }
+            });
+        }
+        
+        // 直接从高德地图API获取天气数据
+        function fetchWeatherDirectlyFromAMap() {
+            const AMAP_KEY = "f4f816e86d8d9c746f2f1849ee6e047a"; // 高德地图API密钥
+            
+            // 获取城市编码
+            const cityAdcode = getCityAdcode(currentCity);
+            console.log('尝试直接从高德地图获取天气，城市编码:', cityAdcode);
+            
+            // 使用JSONP跨域请求高德地图API
+            $.ajax({
+                url: 'https://restapi.amap.com/v3/weather/weatherInfo',
+                method: 'GET',
+                dataType: 'jsonp',
+                data: {
+                    key: AMAP_KEY,
+                    city: cityAdcode,
+                    extensions: 'base'
+                },
+                timeout: 8000,
+                success: function(response) {
+                    console.log('直接从高德地图获取天气成功:', response);
+                    
+                    if (response && response.status === '1' && response.lives && response.lives.length > 0) {
+                        // 转换高德地图数据格式为前端使用的格式
+                        const amapData = response.lives[0];
+                        const weatherData = {
+                            weather: [{
+                                id: getWeatherIdByDescription(amapData.weather),
+                                description: amapData.weather
+                            }],
+                            main: {
+                                temp: amapData.temperature
+                            },
+                            name: amapData.city
+                        };
+                        
+                        handleWeatherData(weatherData);
+                    } else {
+                        console.error('高德地图返回数据格式不正确:', response);
+                        // 当高德地图API也失败时，使用备用方案
+                        handleWeatherError();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('直接从高德地图获取天气失败:', status, error);
+                    // 尝试使用本地模拟数据
+                    handleWeatherError();
+                }
+            });
+        }
+        
+        // 根据城市名获取城市编码
+        function getCityAdcode(cityName) {
+            const cityCodeMap = {
+                'beijing': '110000' // 北京
+            };
+            
+            return cityCodeMap[cityName.toLowerCase()] || '110000'; // 默认北京
+        }
+        
+        // 根据天气描述确定天气ID
+        function getWeatherIdByDescription(description) {
+            if (!description) return 800;
+            
+            if (description.includes('晴')) {
+                return 800; // 晴天
+            } else if (description.includes('多云') || description.includes('阴')) {
+                return 801; // 多云
+            } else if (description.includes('雨')) {
+                if (description.includes('雷')) {
+                    return 201; // 雷阵雨
+                } else if (description.includes('小')) {
+                    return 300; // 小雨
+                } else if (description.includes('中')) {
+                    return 301; // 中雨
+                } else if (description.includes('大')) {
+                    return 302; // 大雨
+                } else {
+                    return 500; // 一般雨
+                }
+            } else if (description.includes('雪')) {
+                return 600; // 雪
+            } else if (description.includes('雾') || description.includes('霾')) {
+                return 701; // 雾霾
+            } else {
+                return 800; // 默认晴天
+            }
+        }
+        
+        // 处理获取到的天气数据
+        function handleWeatherData(data) {
+            clearTimeout(weatherLoadingTimer);
+            console.log('处理天气数据:', data);
+            
+            if(data && data.weather && data.weather.length > 0) {
+                weatherData = data;
+                $('#weatherDesc').text(data.weather[0].description);
+                $('#weatherTemp').text(data.main.temp + '°C');
+                
+                // 切换到天气信息显示状态
+                $('#weatherLoadingIcon').hide();
+                $('#weatherIcon').show();
+                $('#weatherLoading').hide();
+                $('#weatherContent').show();
+                $('#weatherOutfitBtn').show();
+                
+                // 更新城市选择器为当前城市
+                if(data.name) {
+                    const cityValue = data.name.toLowerCase();
+                    // 如果下拉框中存在这个城市，则选中它
+                    if($('#citySelector option[value="' + cityValue + '"]').length > 0) {
+                        $('#citySelector').val(cityValue);
+                    }
+                }
+            } else {
+                console.error('天气数据格式不符合预期:', data);
+                showWeatherError('天气数据格式不正确');
+            }
+        }
+        
+        // 处理天气数据获取错误
+        function handleWeatherError() {
+            clearTimeout(weatherLoadingTimer);
+            weatherApiRetries++;
+            if (weatherApiRetries < MAX_RETRIES) {
+                console.log(`正在重试获取天气数据 (${weatherApiRetries}/${MAX_RETRIES})...`);
+                $('#weatherLoading').text(`正在重试获取天气信息 (${weatherApiRetries}/${MAX_RETRIES})...`);
+                setTimeout(fetchWeatherData, 1000); // 延迟1秒后重试
+            } else {
+                useFallbackWeather(); // 直接使用本地模拟数据，而不是显示错误
+            }
+        }
+
+        // 显示天气错误信息
+        function showWeatherError(message) {
+            // 直接使用本地模拟数据，而不显示错误信息
+            useFallbackWeather();
+            
+            // 在控制台记录错误信息
+            console.error('天气数据加载错误:', message);
+        }
+        
+        // 使用本地天气数据（模拟数据）
+        function useFallbackWeather() {
+            // 创建模拟天气数据
+            const now = new Date();
+            const hour = now.getHours();
+            let mockWeather = {};
+            
+            // 基于时间和选择的城市生成不同的天气情况
+            let selectedCity = $('#citySelector option:selected').text();
+            
+            if (hour >= 6 && hour < 12) {
+                // 上午
+                mockWeather = {
+                    weather: [{ id: 800, description: "晴朗" }],
+                    main: { temp: 18 + Math.floor(Math.random() * 6) }, // 18-23度
+                    name: selectedCity
+                };
+            } else if (hour >= 12 && hour < 18) {
+                // 下午
+                mockWeather = {
+                    weather: [{ id: 801, description: "少云" }],
+                    main: { temp: 24 + Math.floor(Math.random() * 6) }, // 24-29度
+                    name: selectedCity
+                };
+            } else {
+                // 晚上
+                mockWeather = {
+                    weather: [{ id: 802, description: "多云" }],
+                    main: { temp: 16 + Math.floor(Math.random() * 6) }, // 16-21度
+                    name: selectedCity
+                };
+            }
+            
+            // 使用模拟数据更新界面
+            weatherData = mockWeather;
+            
+            // 更新天气卡片
+            $('#weatherCard').html(`
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-cloud-sun fa-2x me-3"></i>
+                        <div>
+                            <span>${mockWeather.weather[0].description}</span>
+                            <span class="ms-3">${mockWeather.main.temp}°C</span>
+                            <small class="d-block text-muted">（本地模拟数据 - ${selectedCity}）</small>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="input-group input-group-sm me-2 d-inline-flex" style="width: auto;">
+                            <select class="form-select form-select-sm" id="citySelector" style="width: 100px;">
+                                <option value="beijing" ${currentCity === 'beijing' ? 'selected' : ''}>北京</option>
+                            </select>
+                            <button class="btn btn-outline-secondary btn-sm" id="changeCityBtn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" id="weatherOutfitBtn">
+                            <i class="fas fa-tshirt me-2"></i>一键穿搭
+                        </button>
+                    </div>
+                </div>
+            `);
+            
+            // 重新绑定按钮事件
+            $('#weatherOutfitBtn').click(function() {
+                showWeatherOutfitRecommendation(mockWeather);
+            });
+            
+            $('#changeCityBtn').click(function() {
+                currentCity = $('#citySelector').val();
+                weatherApiRetries = 0;
+                fetchWeatherData();
+            });
+            
+            $('#citySelector').change(function() {
+                currentCity = $(this).val();
+            });
+        }
+        
+        // 显示天气穿搭推荐（抽取逻辑便于复用）
+        function showWeatherOutfitRecommendation(weatherData) {
+            if (!weatherData) return;
+            
+            // 1. 基于天气状况推荐穿搭类型
+            const weatherId = weatherData.weather[0].id;
+            const temp = weatherData.main.temp;
+            let recommendedOccasion = 'casual'; // 默认休闲
+            let recommendedStyle = 'minimalist'; // 默认极简
+            let reason = '';
+            
+            // 基于天气ID推荐场合和风格 (参考 OpenWeather API)
+            // 晴天(800): 休闲
+            // 多云/阴天(801-804): 适合正式
+            // 雨雪雾等(其他): 根据情况
+            if (weatherId === 800) {
+                // 晴天
+                if (temp > 25) {
+                    recommendedOccasion = 'casual';
+                    recommendedStyle = 'streetwear';
+                    reason = '今天天气晴朗且温度较高，建议轻松休闲的街头风格，凸显活力';
+                } else if (temp > 15) {
+                    recommendedOccasion = 'casual';
+                    recommendedStyle = 'korean';
+                    reason = '今天阳光明媚，温度适中，韩系休闲风格舒适又时尚';
+                } else {
+                    recommendedOccasion = 'casual';
+                    recommendedStyle = 'minimalist';
+                    reason = '今天阳光明媚但温度较低，极简休闲风格配合保暖单品最合适';
+                }
+            } else if (weatherId >= 801 && weatherId <= 804) {
+                // 多云/阴天
+                if (temp > 20) {
+                    recommendedOccasion = 'work';
+                    recommendedStyle = 'business';
+                    reason = '今天天气多云，温度较高，适合商务通勤风格，干练得体';
+                } else {
+                    recommendedOccasion = 'formal';
+                    recommendedStyle = 'minimalist';
+                    reason = '今天天气阴沉，适合极简正式风格，沉稳有质感';
+                }
+            } else if (weatherId >= 300 && weatherId < 600) {
+                // 雨天
+                recommendedOccasion = 'work';
+                recommendedStyle = 'minimalist';
+                reason = '今天有雨，建议简约工作风格，搭配防水单品';
+            } else if (weatherId >= 600 && weatherId < 700) {
+                // 雪天
+                recommendedOccasion = 'casual';
+                recommendedStyle = 'korean';
+                reason = '今天下雪，韩系温暖风格很适合，注重保暖和层次感';
+            } else {
+                // 其他天气
+                recommendedOccasion = 'casual';
+                recommendedStyle = 'minimalist';
+                reason = '今天天气多变，极简休闲风格百搭又实用';
+            }
+            
+            // 2. 从现有的穿搭中选择匹配的推荐
+            let foundOutfit = false;
+            $('.outfit-item').each(function() {
+                const occasion = $(this).data('occasion');
+                const style = $(this).data('style');
+                
+                if (occasion === recommendedOccasion && style === recommendedStyle && !foundOutfit) {
+                    foundOutfit = true;
+                    
+                    // 提取穿搭信息
+                    const title = $(this).find('.card-title').text();
+                    const description = $(this).find('.description-text').text();
+                    const items = $(this).find('.outfit-items').html();
+                    
+                    // 设置弹窗内容
+                    $('#weatherOutfitReason').text(reason);
+                    
+                    // 设置场合标签
+                    let occasionText = '';
+                    switch(recommendedOccasion) {
+                        case 'casual': occasionText = '休闲'; break;
+                        case 'formal': occasionText = '正式'; break;
+                        case 'party': occasionText = '派对'; break;
+                        case 'work': occasionText = '工作'; break;
+                    }
+                    $('#weatherOutfitBadge').text(occasionText);
+                    
+                                            // 设置推荐详情
+                        $('#weatherOutfitDetails').html(`
+                            <h5>${title}</h5>
+                            <p class="mt-2">${description}</p>
+                        `);
+                }
+            });
+            
+            // 未找到完全匹配的穿搭，只匹配场合
+            if (!foundOutfit) {
+                $('.outfit-item').each(function() {
+                    const occasion = $(this).data('occasion');
+                    
+                    if (occasion === recommendedOccasion && !foundOutfit) {
+                        foundOutfit = true;
+                        
+                        // 提取穿搭信息
+                        const title = $(this).find('.card-title').text();
+                        const description = $(this).find('.description-text').text();
+                        const items = $(this).find('.outfit-items').html();
+                        
+                        // 设置弹窗内容
+                        $('#weatherOutfitReason').text(reason);
+                        
+                        // 设置场合标签
+                        let occasionText = '';
+                        switch(recommendedOccasion) {
+                            case 'casual': occasionText = '休闲'; break;
+                            case 'formal': occasionText = '正式'; break;
+                            case 'party': occasionText = '派对'; break;
+                            case 'work': occasionText = '工作'; break;
+                        }
+                        $('#weatherOutfitBadge').text(occasionText);
+                        
+                        // 设置推荐详情
+                        $('#weatherOutfitDetails').html(`
+                            <h5>${title}</h5>
+                            <p class="mt-2">${description}</p>
+                        `);
+                    }
+                });
+            }
+            
+            // 如果还是没找到，提供默认推荐
+            if (!foundOutfit) {
+                $('#weatherOutfitReason').text(reason);
+                
+                let occasionText = '';
+                switch(recommendedOccasion) {
+                    case 'casual': occasionText = '休闲'; break;
+                    case 'formal': occasionText = '正式'; break;
+                    case 'party': occasionText = '派对'; break;
+                    case 'work': occasionText = '工作'; break;
+                }
+                $('#weatherOutfitBadge').text(occasionText);
+                
+                $('#weatherOutfitDetails').html(`
+                    <h5>适合今日天气的${occasionText}穿搭</h5>
+                    <p class="mt-2">根据当前天气特点，为您推荐舒适实用的穿搭方案。</p>
+                    <p>今天的天气适合${temp > 20 ? '轻薄透气' : (temp > 10 ? '中等厚度' : '保暖厚实')}的服装。</p>
+                    <p>${weatherId >= 300 && weatherId < 600 ? '记得带上雨具，选择防水面料的服装。' : (weatherId === 800 ? '阳光明媚，适合明亮色彩的服装。' : '天气变化多端，建议穿着舒适易调节的衣物。')}</p>
+                `);
+            }
+            
+            // 显示弹窗
+            const weatherOutfitModal = new bootstrap.Modal(document.getElementById('weatherOutfitModal'));
+            weatherOutfitModal.show();
+        }
+        
+        // 点击一键穿搭按钮
+        $('#weatherOutfitBtn').click(function() {
+            if (!weatherData) {
+                alert('天气数据尚未加载完成，请稍后再试！');
+                return;
+            }
+            
+            showWeatherOutfitRecommendation(weatherData);
+        });
+
+        // 在页面加载完成后立即获取天气数据
+        console.log('页面加载完成，开始获取天气数据...');
+        fetchWeatherData();
+    });
+    </script>
+</body>
+</html> 

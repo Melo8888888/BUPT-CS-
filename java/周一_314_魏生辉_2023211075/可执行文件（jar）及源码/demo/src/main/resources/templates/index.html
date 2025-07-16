@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮驿四方 - 衣食学行指南</title>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.3.8/dist/index.css">
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <!-- AOS 动画库 -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- 卡通风格CSS -->
+    <link th:href="@{/static/css/cartoon.css}" rel="stylesheet">
+    <link href="/static/css/cartoon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(to right, #3a7bd5, #00d2ff);
+            --secondary-color: #f5f5f5;
+            --accent-color: #ffd700;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --shadow-sm: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 30px 0 rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --transition-normal: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f9fafb;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* 背景装饰 */
+        .bg-decoration {
+            position: absolute;
+            z-index: -1;
+        }
+        
+        .bg-circle-1 {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(58, 123, 213, 0.08), rgba(0, 210, 255, 0.08));
+            top: -100px;
+            right: -100px;
+        }
+        
+        .bg-circle-2 {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.08), rgba(255, 165, 0, 0.08));
+            bottom: 10%;
+            left: -100px;
+        }
+        
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOWY5ZjkiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBzdHJva2U9IiNlNmU2ZTYiIHN0cm9rZS13aWR0aD0iLjUiIGQ9Ik02MCAwdjYwTTAgMGg2MCIvPjwvZz48L3N2Zz4=');
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            background-color: white;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.8rem 0;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-text {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-left: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            transition: var(--transition-normal);
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+            background-color: rgba(58, 123, 213, 0.08);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .header-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: var(--transition-normal);
+            position: relative;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .header-icon-btn:hover {
+            background-color: rgba(58, 123, 213, 0.08);
+            color: var(--primary-color);
+        }
+        
+        .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #ff4d4f;
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 主要内容 */
+        .main-content {
+            padding: 2rem 0 6rem;
+        }
+        
+        /* 欢迎区域 */
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+        
+        .welcome-title {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        
+        .welcome-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* 功能卡片区 */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: var(--transition-normal);
+            position: relative;
+            height: 280px;
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--primary-gradient);
+        }
+        
+        .feature-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -100px;
+            right: -100px;
+            transition: all 0.5s ease;
+        }
+        
+        .feature-card:hover::after {
+            transform: scale(1.5);
+        }
+        
+        .feature-card.study::before {
+            background: linear-gradient(to right, #3a7bd5, #00d2ff);
+        }
+        
+        .feature-card.food::before {
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+        }
+        
+        .feature-card.travel::before {
+            background: linear-gradient(to right, #56ab2f, #a8e063);
+        }
+        
+        .feature-card.fashion::before {
+            background: linear-gradient(to right, #bc4e9c, #f80759);
+        }
+        
+        .feature-content {
+            padding: 2.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card.study .feature-icon {
+            color: #3a7bd5;
+        }
+        
+        .feature-card.food .feature-icon {
+            color: #ff7e5f;
+        }
+        
+        .feature-card.travel .feature-icon {
+            color: #56ab2f;
+        }
+        
+        .feature-card.fashion .feature-icon {
+            color: #bc4e9c;
+        }
+        
+        .feature-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-family: 'ZCOOL QingKe HuangYou', cursive;
+        }
+        
+        .feature-desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 85%;
+        }
+        
+        /* 底部导航 */
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 99;
+            padding: 0.8rem 0;
+        }
+        
+        .footer-nav-container {
+            display: flex;
+            justify-content: space-around;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: var(--transition-normal);
+            padding: 0.5rem;
+        }
+        
+        .footer-nav-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .footer-nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .footer-nav-item span {
+            font-size: 0.8rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+        }
+
+        /* Element Plus 样式覆盖 */
+        .el-button {
+            --el-button-hover-bg-color: var(--primary-color);
+            --el-button-hover-border-color: var(--primary-color);
+        }
+        
+        .el-button--primary {
+            --el-button-bg-color: var(--primary-color);
+            --el-button-border-color: var(--primary-color);
+        }
+        
+        .el-card {
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md) !important;
+            transition: var(--transition-normal);
+        }
+        
+        .el-card:hover {
+            box-shadow: var(--shadow-lg) !important;
+        }
+        
+        /* 额外增强效果 */
+        .feature-card {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            z-index: 0;
+        }
+        
+        .welcome-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .welcome-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="bg-decoration bg-circle-1"></div>
+    <div class="bg-decoration bg-circle-2"></div>
+    <div class="bg-pattern"></div>
+    
+    <!-- 卡通装饰元素 -->
+    <div class="cartoon-cloud cloud-1"></div>
+    <div class="cartoon-cloud cloud-2"></div>
+    <div class="cartoon-sun"></div>
+    <div class="cartoon-star star-1"></div>
+    <div class="cartoon-star star-2"></div>
+    
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="/" class="logo">
+                <i class="fas fa-map-marked-alt logo-icon"></i>
+                <span class="logo-text">邮驿四方</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="/" class="nav-link cartoon-nav-item active">首页</a>
+                <a href="/about" class="nav-link cartoon-nav-item">关于我们</a>
+                <a href="/contact" class="nav-link cartoon-nav-item">联系方式</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="header-icon-btn cartoon-element">
+                    <i class="fas fa-search cartoon-icon"></i>
+                    <div class="cartoon-bubble">搜索</div>
+                </button>
+                <button class="header-icon-btn cartoon-element">
+                    <i class="fas fa-bell cartoon-icon"></i>
+                    <span class="badge cartoon-badge">2</span>
+                    <div class="cartoon-bubble">通知</div>
+                </button>
+                <button class="header-icon-btn cartoon-element">
+                    <i class="fas fa-user cartoon-icon"></i>
+                    <div class="cartoon-bubble">个人中心</div>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 欢迎区域 -->
+            <section class="welcome-section" data-aos="fade-up">
+                <h1 class="welcome-title cartoon-title" style="font-size: 3rem; margin-bottom: 1.2rem;">欢迎来到邮驿四方</h1>
+                <p class="welcome-subtitle" style="font-size: 1.2rem; max-width: 700px;">在这里，衣食学行四方信息交汇，犹如古驿道上的重要驿站，为您探明方向</p>
+                <div class="el-row" style="margin-top: 2rem; justify-content: center; display: flex; gap: 1rem;">
+                    <button class="cartoon-btn bounce">
+                        <i class="fas fa-compass" style="margin-right: 5px;"></i>
+                        开始探索
+                    </button>
+                    <button class="cartoon-btn">
+                        <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
+                        了解更多
+                    </button>
+                </div>
+                <div style="margin-top: 20px; font-family: 'ZCOOL KuaiLe', cursive; color: #2B2D42;">
+                    <span class="cartoon-element" style="margin: 0 10px;">
+                        <i class="fas fa-graduation-cap cartoon-icon float"></i>
+                        <span>学习成长</span>
+                    </span>
+                    <span class="cartoon-element" style="margin: 0 10px;">
+                        <i class="fas fa-heart cartoon-icon pulse"></i>
+                        <span>快乐体验</span>
+                    </span>
+                    <span class="cartoon-element" style="margin: 0 10px;">
+                        <i class="fas fa-lightbulb cartoon-icon wobble"></i>
+                        <span>创意无限</span>
+                    </span>
+                </div>
+            </section>
+            
+            <!-- 功能卡片区 -->
+            <h2 class="cartoon-section-title" style="text-align: center; margin-bottom: 3rem; font-size: 2.2rem; font-family: 'ZCOOL XiaoWei', serif; color: #333; position: relative;">
+                功能导航
+                <span style="display: block; width: 80px; height: 4px; background: var(--primary-gradient); margin: 15px auto 0; border-radius: 2px;"></span>
+            </h2>
+            <div class="features-grid">
+                <!-- 学习笔记卡片 -->
+                <a th:href="@{/study-notes}" class="feature-card cartoon-card study" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-content">
+                        <i class="fas fa-book-open feature-icon cartoon-icon float"></i>
+                        <h2 class="feature-title">读书万卷：文思驿站</h2>
+                        <p class="feature-desc">趣味性学习，AI助手笔记管理</p>
+                        <div style="position: absolute; bottom: 20px; right: 20px; font-size: 1rem; color: #3a7bd5; font-weight: bold;">
+                            <i class="fas fa-arrow-right"></i> 点击进入
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 美食推荐卡片 -->
+                <a th:href="@{/food-recommendations}" class="feature-card cartoon-card food" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-content">
+                        <i class="fas fa-utensils feature-icon cartoon-icon wobble"></i>
+                        <h2 class="feature-title">寻味九州：风味驿馆</h2>
+                        <p class="feature-desc">发现周边美食，分享味蕾体验</p>
+                        <div style="position: absolute; bottom: 20px; right: 20px; font-size: 1rem; color: #ff7e5f; font-weight: bold;">
+                            <i class="fas fa-arrow-right"></i> 点击进入
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 行程推荐卡片 -->
+                <a th:href="@{/travel-itineraries}" class="feature-card cartoon-card travel" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-content">
+                        <i class="fas fa-route feature-icon cartoon-icon bounce"></i>
+                        <h2 class="feature-title">行者无疆：山河驿路</h2>
+                        <p class="feature-desc">探索旅行路线，AI智能出行推荐</p>
+                        <div style="position: absolute; bottom: 20px; right: 20px; font-size: 1rem; color: #56ab2f; font-weight: bold;">
+                            <i class="fas fa-arrow-right"></i> 点击进入
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 穿搭推荐卡片 -->
+                <a th:href="@{/fashion-outfits}" class="feature-card cartoon-card fashion" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-content">
+                        <i class="fas fa-tshirt feature-icon cartoon-icon pulse"></i>
+                        <h2 class="feature-title">裁云作裳：风尚驿程</h2>
+                        <p class="feature-desc">发现时尚灵感，个性化一键穿搭</p>
+                        <div style="position: absolute; bottom: 20px; right: 20px; font-size: 1rem; color: #bc4e9c; font-weight: bold;">
+                            <i class="fas fa-arrow-right"></i> 点击进入
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 底部导航 -->
+    <nav class="footer-nav cartoon-footer">
+        <div class="footer-nav-container">
+            <a th:href="@{/study-notes}" class="footer-nav-item cartoon-footer-item cartoon-element">
+                <i class="fas fa-book cartoon-icon"></i>
+                <span>学习</span>
+                <div class="cartoon-bubble">学习笔记</div>
+            </a>
+            <a th:href="@{/food-recommendations}" class="footer-nav-item cartoon-footer-item cartoon-element">
+                <i class="fas fa-utensils cartoon-icon"></i>
+                <span>美食</span>
+                <div class="cartoon-bubble">美食推荐</div>
+            </a>
+            <a th:href="@{/}" class="footer-nav-item cartoon-footer-item active cartoon-element">
+                <i class="fas fa-home cartoon-icon bounce"></i>
+                <span>首页</span>
+                <div class="cartoon-bubble">返回首页</div>
+            </a>
+            <a th:href="@{/travel-itineraries}" class="footer-nav-item cartoon-footer-item cartoon-element">
+                <i class="fas fa-route cartoon-icon"></i>
+                <span>行程</span>
+                <div class="cartoon-bubble">行程推荐</div>
+            </a>
+            <a th:href="@{/fashion-outfits}" class="footer-nav-item cartoon-footer-item cartoon-element">
+                <i class="fas fa-tshirt cartoon-icon"></i>
+                <span>穿搭</span>
+                <div class="cartoon-bubble">穿搭推荐</div>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- 引入脚本 -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- 多种路径引用方式，确保至少一种能正常工作 -->
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/static/js/index.js}" onerror="console.log('Failed to load from /static/js/index.js')"></script>
+    <script src="/js/index.js" onerror="console.log('Failed to load from /js/index.js')"></script>
+</body>
+</html> 

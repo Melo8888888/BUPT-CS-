@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣味游戏 - 英语单词学习</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        .word-list, .definition-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .word-item, .definition-item {
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .word-item:hover, .definition-item:hover {
+            background-color: #cfe2ff;
+            border-color: #007bff;
+        }
+        .word-item.selected, .definition-item.selected {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .word-item.matched, .definition-item.matched {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+            cursor: default;
+            opacity: 0.7;
+        }
+        .match-line-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none; /* Allow clicks to pass through */
+            overflow: hidden;
+        }
+        .match-line {
+            position: absolute;
+            background-color: #007bff;
+            height: 3px;
+            transform-origin: 0 0;
+            z-index: 10;
+            transition: transform 0.3s ease-out;
+        }
+        .congratulations-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .congratulations-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            animation: fadeIn 0.5s;
+        }
+        .congratulations-content h2 {
+            color: #28a745;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .congratulations-content p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        .celebration-animation {
+            font-size: 4em;
+            margin-top: 20px;
+            animation: bounce 0.8s infinite alternate;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: confetti-fall 3s forwards;
+            opacity: 0;
+            border-radius: 50%;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotateZ(720deg); opacity: 0; }
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <a href="/study-notes" class="btn btn-secondary mt-3 ms-3 back-button">← 返回学习模块</a>
+
+    <div class="container flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+        <div class="game-container w-100" style="max-width: 900px;">
+            <h1 class="text-center mb-4" style="color: #9C27B0;">单词匹配趣味游戏</h1>
+            <p class="text-center text-muted mb-5">点击左侧单词，再点击右侧对应的释义进行匹配！</p>
+
+            <div class="row position-relative">
+                <div class="col-md-6">
+                    <ul class="word-list" id="wordList">
+                        <!-- Words will be loaded here -->
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="definition-list" id="definitionList">
+                        <!-- Definitions will be loaded here -->
+                    </ul>
+                </div>
+                <div class="match-line-container" id="matchLineContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Congratulations Modal -->
+    <div id="congratulationsModal" class="congratulations-modal">
+        <div class="congratulations-content">
+            <h2>恭喜你！</h2>
+            <p>你已经成功完成了单词匹配游戏！</p>
+            <div class="celebration-animation">🎉</div>
+            <button class="btn btn-primary mt-4" onclick="window.location.href='/study-notes'">返回学习模块</button>
+            <button class="btn btn-secondary mt-2" id="playAgainBtn">再玩一次</button>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-5 py-3 text-center">
+        <div class="container">
+            <p>&copy; 2025 Lifestyle Portal. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/static/js/cet6-game.js}"></script>
+</body>
+</html> 

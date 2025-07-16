@@ -1,0 +1,66 @@
+--------------------------------------------------------------------------------------
+Timing Analyzer Summary
+--------------------------------------------------------------------------------------
+
+Type           : Worst-case tsu
+Slack          : N/A
+Required Time  : None
+Actual Time    : 12.000 ns
+From           : W_clk[0]
+To             : CONFLICT_REG
+From Clock     : --
+To Clock       : T_clk_3
+Failed Paths   : 0
+
+Type           : Worst-case tco
+Slack          : N/A
+Required Time  : None
+Actual Time    : 17.000 ns
+From           : ST0_gen:ST_Gen|ST
+To             : SBUS
+From Clock     : T_clk_3
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Worst-case tpd
+Slack          : N/A
+Required Time  : None
+Actual Time    : 25.000 ns
+From           : IR[6]
+To             : S[2]
+From Clock     : --
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Worst-case th
+Slack          : N/A
+Required Time  : None
+Actual Time    : -3.000 ns
+From           : W_clk[0]
+To             : CONFLICT_REG
+From Clock     : --
+To Clock       : T_clk_3
+Failed Paths   : 0
+
+Type           : Clock Setup: 'T_clk_3'
+Slack          : N/A
+Required Time  : None
+Actual Time    : 71.43 MHz ( period = 14.000 ns )
+From           : CONFLICT_REG
+To             : CONFLICT_REG
+From Clock     : T_clk_3
+To Clock       : T_clk_3
+Failed Paths   : 0
+
+Type           : Total number of failed paths
+Slack          : 
+Required Time  : 
+Actual Time    : 
+From           : 
+To             : 
+From Clock     : 
+To Clock       : 
+Failed Paths   : 0
+
+--------------------------------------------------------------------------------------
+

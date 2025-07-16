@@ -1,0 +1,8 @@
+192.168.1.100 test.local
+10.0.0.1 cache.test
+172.16.0.1 performance. Benchmark
+127.0.0.1 localhost.test
+8.8.8.8 dns.google.test
+0.0.0.0 test
+0.0.0.0 test1
+0.0.0.0 www.baidu.com

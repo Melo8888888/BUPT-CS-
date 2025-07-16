@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习模块 - 邮驿四方</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+    <link rel="stylesheet" th:href="@{/static/css/fashion-cartoon.css}">
+    <style>
+        /* General styles */
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-card {
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 150px; /* Fixed height for consistent button size */
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .btn-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-study-today {
+            background-color: #6a6aff; /* Example color from screenshot */
+        }
+        .btn-fun-game {
+            background-color: #4CAF50; /* Example color from screenshot */
+        }
+        .btn-study-progress {
+            background-color: #9C27B0; /* Example color from screenshot */
+        }
+        .progress-card {
+            background: linear-gradient(135deg, #f0f8ff, #e6f7ff); /* Light blue gradient */
+            padding: 30px;
+            text-align: center;
+            color: #333;
+        }
+        .progress-bar-custom {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #ddd;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            background-color: #8A2BE2; /* Purple */
+            width: 25%; /* Example width */
+        }
+        .stats-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .stats-item img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+        .footer-icons img {
+            width: 30px;
+            margin: 0 5px;
+        }
+        /* Word Learning Page Styles */
+        .word-card-container {
+            perspective: 1000px; /* For 3D flip effect */
+            margin-top: 50px;
+        }
+        .word-card {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        .word-card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .card-front {
+            z-index: 2;
+            transform: rotateY(0deg);
+            font-size: 3em;
+            font-weight: bold;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            font-size: 1.5em;
+            text-align: center;
+        }
+        .card-back .details {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .card-back .details img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .pronunciation-btn {
+            background-color: #8A2BE2; /* Purple */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .pronunciation-btn:hover {
+            opacity: 0.9;
+        }
+        .nav-buttons button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .nav-buttons button.complete {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .top-nav-buttons .btn {
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg cartoon-navbar">
+        <div class="container">
+            <a class="cartoon-navbar-brand" href="/">
+                <i class="fas fa-book"></i>
+                邮驿四方
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link active" href="#" id="navStudyNotes">
+                            <i class="fas fa-book-open me-1 bounce"></i>学习笔记
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" href="#" id="navStudyParadise">
+                            <i class="fas fa-graduation-cap me-1 float"></i>英语学习
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/food-recommendations}">
+                            <i class="fas fa-utensils me-1 float"></i>美食推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/travel-itineraries}">
+                            <i class="fas fa-compass me-1 float"></i>行程推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/fashion-outfits}">
+                            <i class="fas fa-tshirt me-1 float"></i>穿搭推荐
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div id="studyNotesView" style="display: none;">
+        <h1 class="mb-4">学习笔记</h1>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">邮学家</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chat-container" id="chatContainer" style="height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                            <div class="message bot-message">
+                                <div class="message-content">
+                                    你好！我是邮学家，有什么我可以帮你的吗？
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="userInput" placeholder="输入你的问题...">
+                            <button class="btn btn-primary" id="sendMessage">发送</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-header">分类</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item category-item" data-category="all">全部</li>
+                        <li class="list-group-item category-item" data-category="programming">编程</li>
+                        <li class="list-group-item category-item" data-category="language">语言</li>
+                        <li class="list-group-item category-item" data-category="math">数学</li>
+                        <li class="list-group-item category-item" data-category="science">科学</li>
+                        <li class="list-group-item category-item" data-category="other">其他</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div id="studyNotesList" class="row">
+                    <!-- Notes will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div id="studyParadiseView">
+            <h1 class="text-center mb-5" style="color: #8A2BE2; font-weight: bold;">英语单词学习乐园</h1>
+            <p class="text-center mb-4 text-muted">一起快乐学英语!</p>
+
+            <div class="card progress-card mx-auto mb-5" style="max-width: 600px;">
+                <h4 class="mb-3" style="color: #8A2BE2;">学习进度 📈</h4>
+                <div class="progress-bar-custom mb-3">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <p class="text-muted mb-4">已完成 <span id="daysCompleted">5</span> 天</p>
+                <div class="row justify-content-center">
+                    <div class="col-4 stats-item">
+                        🌟
+                        <p class="mb-0 fs-4" style="color: #FFD700;"><span id="points">780</span></p>
+                        <small class="text-muted">积分</small>
+                    </div>
+                    <div class="col-4 stats-item">
+                        🔥
+                        <p class="mb-0 fs-4" style="color: #FF4500;"><span id="streak">5</span></p>
+                        <small class="text-muted">连续天数</small>
+                    </div>
+                    <div class="col-4 stats-item">
+                        📖
+                        <p class="mb-0 fs-4" style="color: #1E90FF;"><span id="wordsLearned">6</span></p>
+                        <small class="text-muted">个单词</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <button class="btn btn-card btn-study-today w-100" id="btnTodayStudy">
+                        📚 今日学习<br><small>学习新单词</small>
+                    </button>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <button class="btn btn-card btn-fun-game w-100" id="btnFunGame">
+                        🎮 趣味游戏<br><small>玩游戏学单词</small>
+                    </button>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <button class="btn btn-card btn-study-progress w-100" id="btnOverallProgress">
+                        📊 学习进度<br><small>查看我的成绩</small>
+                    </button>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <button class="btn btn-card btn-notes w-100" id="btnTakeNotes" style="background-color: #f39c12;">
+                        📝 记笔记<br><small>AI辅助学习</small>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center footer-icons mt-5">
+                🦄
+                🌈
+                ⭐
+                <p class="mt-3 text-muted">每天学一点，进步看得见！</p>
+            </div>
+        </div>
+
+        <div id="wordLearningView" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="#" id="backToParadise" class="btn btn-outline-secondary">← 返回首页</a>
+                <h2 class="mb-0">第 <span id="currentDay">6</span> 天学习 <span class="text-muted">(Family)</span></h2>
+                <div class="top-nav-buttons">
+                    <button class="btn btn-primary" id="btnStudyMode">学习</button>
+                    <button class="btn btn-outline-primary" id="btnPracticeMode">练习</button>
+                </div>
+            </div>
+
+            <div class="progress mb-4" style="height: 10px;">
+                <div class="progress-bar" role="progressbar" style="width: 10%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" id="wordProgressBar"></div>
+            </div>
+            <p class="text-muted text-center mb-5">单词进度: <span id="wordProgressCount">1/10</span></p>
+
+            <div class="word-card-container mx-auto" style="max-width: 500px;">
+                <div class="word-card" id="wordCard">
+                    <div class="card-face card-front">
+                        <span id="cardWord">father</span>
+                    </div>
+                    <div class="card-face card-back">
+                        <h3 id="cardDefinition">爸爸</h3>
+                        <div class="details">
+                            <p>📁 分类: <span id="cardCategory">家庭 (Family)</span></p>
+                            <p>📅 第 <span id="cardStudyDay">6</span> 天学习</p>
+                            <p>⭐ 难度: <span id="cardDifficulty">basic</span></p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center text-muted mt-3">点击卡片翻转</p>
+            </div>
+
+            <div class="d-flex justify-content-between mt-5 nav-buttons">
+                <button class="btn btn-light" id="btnPreviousWord">← 上一个</button>
+                <button class="btn btn-success complete" id="btnCompleteStudy">✔ 完成学习</button>
+                <button class="btn btn-light" id="btnNextWord">下一个 →</button>
+            </div>
+
+            <div id="practiceOptions" class="row justify-content-center mt-4" style="display: none;">
+                <div class="col-12 text-center" id="practiceQuestion"></div>
+                <div class="col-md-6 mt-3">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary practice-option-btn"></button>
+                        <button class="btn btn-outline-primary practice-option-btn"></button>
+                        <button class="btn btn-outline-primary practice-option-btn"></button>
+                        <button class="btn btn-outline-primary practice-option-btn"></button>
+                    </div>
+                </div>
+                <div class="col-12 text-center mt-3" id="practiceFeedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createNoteModal" tabindex="-1" aria-labelledby="createNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createNoteModalLabel">创建新笔记</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createNoteForm">
+                        <div class="mb-3">
+                            <label for="noteTitle" class="form-label">标题</label>
+                            <input type="text" class="form-control" id="noteTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noteCategory" class="form-label">分类</label>
+                            <select class="form-select" id="noteCategory" required>
+                                <option value="programming">编程</option>
+                                <option value="language">语言</option>
+                                <option value="math">数学</option>
+                                <option value="science">科学</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noteContent" class="form-label">内容</label>
+                            <textarea class="form-control" id="noteContent" rows="10" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveNoteBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewNoteModal" tabindex="-1" aria-labelledby="viewNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewNoteModalLabel">笔记详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h3 id="viewNoteTitle"></h3>
+                    <span class="badge bg-primary mb-3" id="viewNoteCategory"></span>
+                    <div id="viewNoteContent" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="editNoteBtn">编辑</button>
+                    <button type="button" class="btn btn-danger" id="deleteNoteBtn">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加底部导航栏 -->
+    <div class="cartoon-footer-nav">
+        <a th:href="@{/study-notes}" class="cartoon-footer-item active">
+            <i class="fas fa-book-open bounce"></i>
+            <span>学习</span>
+        </a>
+        <a th:href="@{/food-recommendations}" class="cartoon-footer-item">
+            <i class="fas fa-utensils"></i>
+            <span>美食</span>
+        </a>
+        <a th:href="@{/travel-itineraries}" class="cartoon-footer-item">
+            <i class="fas fa-compass"></i>
+            <span>行程</span>
+        </a>
+        <a th:href="@{/fashion-outfits}" class="cartoon-footer-item">
+            <i class="fas fa-tshirt"></i>
+            <span>穿搭</span>
+        </a>
+    </div>
+
+    <footer class="cartoon-footer">
+        <div class="container text-center">
+            <p>邮驿四方 &copy; 2025 - 为您的生活提供方向</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/static/js/fashion-cartoon.js}"></script>
+    <script th:src="@{/static/js/study-notes.js}"></script>
+</body>
+</html>

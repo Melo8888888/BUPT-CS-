@@ -1,0 +1,503 @@
+/* 美食页面卡通风格 */
+
+/* 导入卡通字体 */
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&display=swap');
+
+/* 美食卡通卡片 */
+.food-cartoon-card {
+    background-color: #fff;
+    border: 3px solid #2B2D42;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 #2B2D42;
+    transition: all 0.3s ease;
+    transform: rotate(0deg);
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.food-cartoon-card:hover {
+    transform: translateY(-5px) rotate(2deg);
+    box-shadow: 8px 8px 0 #2B2D42;
+}
+
+.food-cartoon-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #FF9F1C, #FFD166);
+}
+
+/* 不同菜系的颜色 */
+.food-cartoon-card[data-cuisine="chinese"]::before {
+    background: linear-gradient(to right, #EF476F, #FF9F1C);
+}
+
+.food-cartoon-card[data-cuisine="japanese"]::before {
+    background: linear-gradient(to right, #06D6A0, #118AB2);
+}
+
+.food-cartoon-card[data-cuisine="korean"]::before {
+    background: linear-gradient(to right, #118AB2, #073B4C);
+}
+
+.food-cartoon-card[data-cuisine="western"]::before {
+    background: linear-gradient(to right, #6F42C1, #EF476F);
+}
+
+.food-cartoon-card[data-cuisine="other"]::before {
+    background: linear-gradient(to right, #FFD166, #06D6A0);
+}
+
+/* 卡片标题 */
+.food-cartoon-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    color: #2B2D42;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+/* 卡片内容 */
+.food-cartoon-content {
+    padding: 15px;
+    position: relative;
+}
+
+/* 卡片描述 */
+.food-cartoon-description {
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 卡片底部 */
+.food-cartoon-footer {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-top: 2px dashed #e9ecef;
+    display: flex;
+    justify-content: center;
+}
+
+/* 卡通按钮 */
+.cartoon-food-btn {
+    background-color: #FFD166;
+    border: 2px solid #2B2D42;
+    border-radius: 12px;
+    color: #2B2D42;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 0.9rem;
+    padding: 6px 15px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 0 #2B2D42;
+    transform: translateY(0);
+}
+
+.cartoon-food-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #2B2D42;
+    background-color: #FFDA85;
+}
+
+.cartoon-food-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #2B2D42;
+}
+
+/* 卡通徽章 */
+.cartoon-badge {
+    background: #FFD166;
+    color: #2B2D42;
+    border: 2px solid #2B2D42;
+    border-radius: 20px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-weight: bold;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    display: inline-block;
+    box-shadow: 2px 2px 0 #2B2D42;
+    transform: rotate(-2deg);
+}
+
+/* 卡通评分星星 */
+.cartoon-stars {
+    color: #FFD166;
+    text-shadow: 1px 1px 0 #2B2D42;
+    font-size: 1.1rem;
+    margin-right: 5px;
+}
+
+/* 卡通位置图标 */
+.cartoon-location {
+    color: #EF476F;
+    margin-right: 5px;
+    animation: bounce 2s infinite;
+}
+
+/* 卡通筛选区域 */
+.cartoon-filter-card {
+    background-color: #fff;
+    border: 3px solid #2B2D42;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 #2B2D42;
+    margin-bottom: 20px;
+}
+
+.cartoon-filter-header {
+    background: linear-gradient(to right, #118AB2, #06D6A0);
+    color: #fff;
+    padding: 10px 15px;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 1.2rem;
+    border-bottom: 3px solid #2B2D42;
+}
+
+.cartoon-filter-body {
+    padding: 15px;
+}
+
+.cartoon-filter-title {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #2B2D42;
+    border-bottom: 2px dashed #e9ecef;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* 卡通复选框 */
+.cartoon-checkbox {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.cartoon-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.cartoon-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #f8f9fa;
+    border: 2px solid #2B2D42;
+    border-radius: 5px;
+}
+
+.cartoon-checkbox:hover input ~ .cartoon-checkmark {
+    background-color: #FFD166;
+}
+
+.cartoon-checkbox input:checked ~ .cartoon-checkmark {
+    background-color: #06D6A0;
+}
+
+.cartoon-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.cartoon-checkbox input:checked ~ .cartoon-checkmark:after {
+    display: block;
+}
+
+.cartoon-checkbox .cartoon-checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* 卡通下拉菜单 */
+.cartoon-select {
+    width: 100%;
+    padding: 8px 15px;
+    border: 2px solid #2B2D42;
+    border-radius: 10px;
+    background-color: #fff;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #2B2D42;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2D42' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px;
+}
+
+.cartoon-select:focus {
+    outline: none;
+    border-color: #06D6A0;
+    box-shadow: 0 0 0 3px rgba(6, 214, 160, 0.3);
+}
+
+/* 卡通标题 */
+.cartoon-page-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    color: #2B2D42;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 0 #FFD166;
+}
+
+.cartoon-page-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #555;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+/* 卡通导航栏 */
+.cartoon-navbar {
+    background: linear-gradient(to right, #2B2D42, #073B4C);
+    padding: 10px 0;
+    border-bottom: 3px solid #FFD166;
+}
+
+.cartoon-navbar-brand {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    color: #fff;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.cartoon-navbar-brand img {
+    height: 40px;
+    margin-right: 10px;
+    filter: drop-shadow(2px 2px 0 #FFD166);
+}
+
+.cartoon-nav-link {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.cartoon-nav-link:hover {
+    background-color: rgba(255, 209, 102, 0.2);
+    color: #FFD166;
+    transform: translateY(-3px);
+}
+
+.cartoon-nav-link.active {
+    background-color: #FFD166;
+    color: #2B2D42;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 动画 */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-3px);}
+    60% {transform: translateY(-1px);}
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+.float {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* 卡通模态框 */
+.cartoon-modal .modal-content {
+    border: 3px solid #2B2D42;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.cartoon-modal .modal-header {
+    background: linear-gradient(to right, #118AB2, #06D6A0);
+    color: #fff;
+    border-bottom: 3px solid #2B2D42;
+}
+
+.cartoon-modal .modal-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 1.5rem;
+}
+
+.cartoon-modal .modal-footer {
+    border-top: 2px dashed #e9ecef;
+}
+
+/* 卡通输入框 */
+.cartoon-input {
+    width: 100%;
+    padding: 8px 15px;
+    border: 2px solid #2B2D42;
+    border-radius: 10px;
+    background-color: #fff;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #2B2D42;
+}
+
+.cartoon-input:focus {
+    outline: none;
+    border-color: #06D6A0;
+    box-shadow: 0 0 0 3px rgba(6, 214, 160, 0.3);
+}
+
+.cartoon-textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #2B2D42;
+    border-radius: 10px;
+    background-color: #fff;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #2B2D42;
+    resize: vertical;
+}
+
+.cartoon-textarea:focus {
+    outline: none;
+    border-color: #06D6A0;
+    box-shadow: 0 0 0 3px rgba(6, 214, 160, 0.3);
+}
+
+/* 卡通页脚 */
+.cartoon-footer {
+    background-color: #FFD166;
+    border-top: 3px solid #2B2D42;
+    padding: 15px 0;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #2B2D42;
+    text-align: center;
+}
+
+/* 底部导航 */
+.cartoon-footer-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border-top: 3px solid #2B2D42;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.cartoon-footer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #2B2D42;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    transition: all 0.3s ease;
+}
+
+.cartoon-footer-item:hover {
+    transform: translateY(-5px);
+    color: #06D6A0;
+}
+
+.cartoon-footer-item.active {
+    color: #EF476F;
+}
+
+.cartoon-footer-item i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+/* 卡通装饰元素 */
+.food-decoration {
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.food-decoration-1 {
+    top: 100px;
+    right: 5%;
+    width: 60px;
+    height: 60px;
+    animation: float 5s ease-in-out infinite;
+}
+
+.food-decoration-2 {
+    bottom: 150px;
+    left: 5%;
+    width: 50px;
+    height: 50px;
+    animation: float 7s ease-in-out infinite;
+}
+
+/* 卡通食物图标 */
+.food-icon {
+    font-size: 2rem;
+    color: #EF476F;
+    margin-right: 15px;
+}
+
+/* 无数据提示 */
+.no-data-container {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    border: 2px dashed #e9ecef;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.no-data-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+}
+
+.no-data-text {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    color: #6c757d;
+    font-size: 1.2rem;
+} 

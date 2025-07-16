@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食推荐 - 邮驿四方</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+    <link rel="stylesheet" th:href="@{/static/css/food-cartoon.css}">
+    <link href="/static/css/food-cartoon.css" rel="stylesheet">
+    <style>
+        .description-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .food-card {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-top: 4px solid #0d6efd;
+        }
+        .food-card:hover {
+            transform: translateY(-5px);
+        }
+        .rating-value {
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .filter-title {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .sort-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .cuisine-badge {
+            font-size: 0.8rem;
+        }
+        .view-details-btn {
+            width: 100%;
+        }
+        
+        /* 每种菜系对应不同的颜色标记 */
+        .food-card[data-cuisine="chinese"] {
+            border-top-color: #dc3545; /* 红色 */
+        }
+        
+        .food-card[data-cuisine="japanese"] {
+            border-top-color: #198754; /* 绿色 */
+        }
+        
+        .food-card[data-cuisine="korean"] {
+            border-top-color: #0dcaf0; /* 蓝色 */
+        }
+        
+        .food-card[data-cuisine="western"] {
+            border-top-color: #6f42c1; /* 紫色 */
+        }
+        
+        .food-card[data-cuisine="other"] {
+            border-top-color: #fd7e14; /* 橙色 */
+        }
+        
+        .food-card .card-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+        }
+        
+        .food-card .description-text {
+            height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg cartoon-navbar">
+        <div class="container">
+            <a class="cartoon-navbar-brand" href="/">
+                <img src="https://cdn.pixabay.com/photo/2013/07/13/10/07/banner-156624_1280.png" alt="驿站所指">
+                邮驿四方
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/study-notes}">
+                            <i class="fas fa-book-open me-1 float"></i>学习笔记
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link active" th:href="@{/food-recommendations}">
+                            <i class="fas fa-utensils me-1 bounce"></i>美食推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/travel-itineraries}">
+                            <i class="fas fa-route me-1 float"></i>行程推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cartoon-nav-link" th:href="@{/fashion-outfits}">
+                            <i class="fas fa-tshirt me-1 float"></i>穿搭推荐
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div id="alertContainer"></div>
+        
+        <div class="card cartoon-filter-card mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-4">
+                        <div class="food-icon pulse">
+                            <i class="fas fa-utensils" style="font-size: 3rem; color: #EF476F;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="cartoon-page-title mb-2">美食推荐</h1>
+                        <p class="cartoon-page-subtitle">发现城市中的美味佳肴，就像驿站中的珍贵补给，为您的旅途增添能量与惊喜。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="cartoon-filter-card">
+                    <div class="cartoon-filter-header">
+                        <i class="fas fa-filter me-2 bounce"></i>筛选与排序
+                    </div>
+                    <div class="cartoon-filter-body">
+                        <h6 class="cartoon-filter-title">菜系</h6>
+                        <label class="cartoon-checkbox">
+                            <input class="cuisine-filter" type="checkbox" value="chinese" id="chineseCuisine">
+                            <span class="cartoon-checkmark"></span>
+                            中餐
+                        </label>
+                        <label class="cartoon-checkbox">
+                            <input class="cuisine-filter" type="checkbox" value="japanese" id="japaneseCuisine">
+                            <span class="cartoon-checkmark"></span>
+                            日餐
+                        </label>
+                        <label class="cartoon-checkbox">
+                            <input class="cuisine-filter" type="checkbox" value="korean" id="koreanCuisine">
+                            <span class="cartoon-checkmark"></span>
+                            韩餐
+                        </label>
+                        <label class="cartoon-checkbox">
+                            <input class="cuisine-filter" type="checkbox" value="western" id="westernCuisine">
+                            <span class="cartoon-checkmark"></span>
+                            西餐
+                        </label>
+                        <label class="cartoon-checkbox mb-4">
+                            <input class="cuisine-filter" type="checkbox" value="other" id="otherCuisine">
+                            <span class="cartoon-checkmark"></span>
+                            其他
+                        </label>
+                        
+                        <h6 class="cartoon-filter-title">最低评分</h6>
+                        <div class="mb-4">
+                            <select class="cartoon-select" id="ratingFilter">
+                                <option value="0">全部</option>
+                                <option value="3">3星及以上</option>
+                                <option value="4">4星及以上</option>
+                                <option value="4.5">4.5星及以上</option>
+                            </select>
+                        </div>
+                        
+                        <h6 class="cartoon-filter-title">排序方式</h6>
+                        <div class="mb-3">
+                            <label for="sortByFilter" class="form-label">排序依据</label>
+                            <select class="cartoon-select mb-3" id="sortByFilter">
+                                <option value="createdAt">发布时间</option>
+                                <option value="rating">评分</option>
+                                <option value="popularity">热度</option>
+                                <option value="name">名称</option>
+                            </select>
+                            
+                            <label for="sortOrderFilter" class="form-label">排序顺序</label>
+                            <select class="cartoon-select" id="sortOrderFilter">
+                                <option value="desc">从高到低</option>
+                                <option value="asc">从低到高</option>
+                            </select>
+                        </div>
+                        
+                        <button class="cartoon-food-btn w-100" id="applyFiltersBtn">
+                            <i class="fas fa-check me-1"></i> 应用筛选
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div id="foodRecommendationsList" class="row">
+                    <!-- Thymeleaf直接显示美食数据 -->
+                    <div th:if="${foodList != null && !foodList.empty}" class="row">
+                        <div th:each="food : ${foodList}" class="col-md-4 mb-4">
+                            <div class="food-cartoon-card h-100" th:data-id="${food.id}" th:data-cuisine="${food.cuisine}">
+                                <div class="food-cartoon-content">
+                                    <div class="popularity-badge mb-2"></div>
+                                    <h5 class="food-cartoon-title" th:text="${food.name}">美食名称</h5>
+                                    <div class="mb-2">
+                                        <span class="cartoon-badge" th:text="${food.cuisine == 'chinese' ? '中餐' : 
+                                            (food.cuisine == 'japanese' ? '日餐' : 
+                                            (food.cuisine == 'korean' ? '韩餐' : 
+                                            (food.cuisine == 'western' ? '西餐' : '其他')))}">菜系</span>
+                                    </div>
+                                    <div class="mb-3 cartoon-stars">
+                                        <!-- 5星评分显示 -->
+                                        <i th:each="i : ${#numbers.sequence(1, 5)}" 
+                                           th:class="${i <= food.rating ? 'fas fa-star' : 
+                                           (i > food.rating && i-1 < food.rating ? 'fas fa-star-half-alt' : 'far fa-star')}"></i>
+                                        <span class="rating-value" th:text="${#numbers.formatDecimal(food.rating, 1, 1)}">5.0</span>
+                                    </div>
+                                    <p class="card-text text-truncate">
+                                        <i class="fas fa-map-marker-alt cartoon-location"></i>
+                                        <span th:text="${food.location}">地点</span>
+                                    </p>
+                                    <p class="food-cartoon-description" th:text="${food.description}">描述</p>
+                                </div>
+                                <div class="food-cartoon-footer">
+                                    <button class="cartoon-food-btn view-details-btn">查看详情</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 如果没有数据，显示提示 -->
+                    <div th:if="${foodList == null || foodList.empty}" class="col-12 no-data-container">
+                        <div class="no-data-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <p class="no-data-text">暂无美食推荐，请添加美味佳肴</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Food Modal -->
+    <div class="modal fade cartoon-modal" id="createFoodModal" tabindex="-1" aria-labelledby="createFoodModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createFoodModalLabel">添加美食推荐</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createFoodForm">
+                        <div class="mb-3">
+                            <label for="foodName" class="form-label">名称</label>
+                            <input type="text" class="cartoon-input" id="foodName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="foodDescription" class="form-label">描述</label>
+                            <textarea class="cartoon-textarea" id="foodDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="foodCuisine" class="form-label">菜系</label>
+                                    <select class="cartoon-select" id="foodCuisine" required>
+                                        <option value="chinese">中餐</option>
+                                        <option value="japanese">日餐</option>
+                                        <option value="korean">韩餐</option>
+                                        <option value="western">西餐</option>
+                                        <option value="other">其他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="foodRating" class="form-label">评分 (1-5)</label>
+                                    <input type="number" class="cartoon-input" id="foodRating" min="1" max="5" step="0.1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="foodLocation" class="form-label">地点</label>
+                            <input type="text" class="cartoon-input" id="foodLocation" required>
+                        </div>
+                        <div class="mb-3" style="display:none;">
+                            <label for="foodImageUrl" class="form-label">图片链接</label>
+                            <input type="url" class="cartoon-input" id="foodImageUrl">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cartoon-food-btn" style="background-color: #f8f9fa;" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="cartoon-food-btn" id="saveFoodBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Food Modal -->
+    <div class="modal fade cartoon-modal" id="viewFoodModal" tabindex="-1" aria-labelledby="viewFoodModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewFoodModalLabel">美食详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4" style="display:none;">
+                        <img id="viewFoodImage" src="" alt="Food Image" class="img-fluid rounded shadow-sm" style="max-height: 300px;">
+                    </div>
+                    <h3 id="viewFoodName" class="food-cartoon-title mb-3"></h3>
+                    <div class="mb-3">
+                        <span class="cartoon-badge" id="viewFoodCuisine"></span>
+                        <span id="viewFoodRating" class="ms-2 cartoon-stars"></span>
+                    </div>
+                    <p class="mb-2"><i class="fas fa-map-marker-alt cartoon-location"></i><span id="viewFoodLocation"></span></p>
+                    <hr>
+                    <h5 class="mt-4 mb-3 cartoon-filter-title">美食描述</h5>
+                    <div id="viewFoodDescription" class="p-3 bg-light rounded food-cartoon-description"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cartoon-food-btn" style="background-color: #f8f9fa;" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="cartoon-food-btn" id="editFoodBtn">
+                        <i class="fas fa-edit me-1"></i> 编辑
+                    </button>
+                    <button type="button" class="cartoon-food-btn" style="background-color: #EF476F;" id="deleteFoodBtn">
+                        <i class="fas fa-trash me-1"></i> 删除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Food Modal -->
+    <div class="modal fade cartoon-modal" id="editFoodModal" tabindex="-1" aria-labelledby="editFoodModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editFoodModalLabel">编辑美食推荐</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editFoodForm">
+                        <input type="hidden" id="editFoodId">
+                        <div class="mb-3">
+                            <label for="editFoodName" class="form-label">名称</label>
+                            <input type="text" class="cartoon-input" id="editFoodName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFoodDescription" class="form-label">描述</label>
+                            <textarea class="cartoon-textarea" id="editFoodDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editFoodCuisine" class="form-label">菜系</label>
+                                    <select class="cartoon-select" id="editFoodCuisine" required>
+                                        <option value="chinese">中餐</option>
+                                        <option value="japanese">日餐</option>
+                                        <option value="korean">韩餐</option>
+                                        <option value="western">西餐</option>
+                                        <option value="other">其他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editFoodRating" class="form-label">评分 (1-5)</label>
+                                    <input type="number" class="cartoon-input" id="editFoodRating" min="1" max="5" step="0.1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFoodLocation" class="form-label">地点</label>
+                            <input type="text" class="cartoon-input" id="editFoodLocation" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFoodImageUrl" class="form-label">图片链接</label>
+                            <input type="url" class="cartoon-input" id="editFoodImageUrl">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cartoon-food-btn" style="background-color: #f8f9fa;" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="cartoon-food-btn" id="updateFoodBtn">更新</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加底部导航栏 -->
+    <div class="cartoon-footer-nav">
+        <a th:href="@{/study-notes}" class="cartoon-footer-item">
+            <i class="fas fa-scroll"></i>
+            <span>学习</span>
+        </a>
+        <a th:href="@{/food-recommendations}" class="cartoon-footer-item active">
+            <i class="fas fa-utensils bounce"></i>
+            <span>美食</span>
+        </a>
+        <a th:href="@{/travel-itineraries}" class="cartoon-footer-item">
+            <i class="fas fa-compass"></i>
+            <span>行程</span>
+        </a>
+        <a th:href="@{/fashion-outfits}" class="cartoon-footer-item">
+            <i class="fas fa-tshirt"></i>
+            <span>穿搭</span>
+        </a>
+    </div>
+
+    <footer class="cartoon-footer">
+        <div class="container text-center">
+            <p>邮驿四方 &copy; 2025 - 为您的生活提供方向</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/static/js/food-test.js}"></script>
+    <script th:src="@{/static/js/food-recommendations.js}"></script>
+    <script th:src="@{/static/js/food-cartoon.js}"></script>
+    <script src="/static/js/food-cartoon.js"></script>
+</body>
+</html> 

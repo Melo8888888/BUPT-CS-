@@ -1,0 +1,89 @@
+module controller (
+    input wire [2:0]SW,
+    input wire [7:0]IR,
+    input wire T_clk_3,
+    input wire [2:0]W_clk,
+    input wire c,
+    input wire z,
+    output wire SBUS,//
+    output reg[3:0] SEL,
+    output wire SELCTL,//
+    output wire DRW,//
+    output wire STOP,//
+    output wire MBUS,//
+    output wire LAR,//
+    output wire ARINC,//
+    output wire SHORT,//
+    output wire MEMW,//
+    output wire LIR, //
+    output wire PCINC, //
+    output reg [3:0]S,
+    output wire CIN, //
+    output wire ABUS, //
+    output wire LDZ,//
+    output wire LDC, //
+    output wire PCADD, //
+    output wire LPC //
+);
+    
+
+
+    wire SST0;
+    wire ST0;
+    ST0_gen ST_Gen(.SST0(SST0), .ST0(ST0), .T_clk_3(T_clk_3));
+
+
+    wire is_IR;
+    assign is_IR = (SW == 3'd0);
+    wire SW_MEM;
+    assign SW_MEM = (SW == 3'b010) | (SW == 3'b001);
+
+    assign LPC = is_IR & (IR[7:4] == 4'b1001) & W_clk[1] & T_clk_3;
+    assign PCADD = is_IR & (( (IR[7:4] == 4'b0111) & (c==1)  )|  ((IR[7:4] == 4'b1000) & (z==1) )  ) & W_clk[1];
+    assign LDC = is_IR & W_clk[1] & ( (IR[7:4] == 4'b0001) | (IR[7:4] == 4'b0100) | (IR[7:4] == 4'b0010)) & T_clk_3;
+    assign LDZ = LDC | (W_clk[1] & is_IR & (IR[7:4] == 4'b0011) & T_clk_3);
+    assign ABUS = is_IR & (W_clk[1] & ( IR[7:6] == 2'b00 | (IR[7:6] == 2'b01 & IR[5:4] != 2'b11 ) | (IR[7:4] == 4'b1001)  ) | (W_clk[2] & IR[7:4] == 4'b0110));
+    assign CIN = is_IR & W_clk[1] & (IR[7:4] == 4'b0001);
+    assign PCINC = is_IR & W_clk[0];
+    assign LIR = PCINC;
+    assign MEMW =  is_IR & W_clk[2] & (IR[7:4] == 4'b0110) | ((SW == 3'b001) & ST0 & W_clk[0] );
+    assign SHORT = SW_MEM & W_clk[0];
+    assign ARINC =  SW_MEM & ST0 & W_clk[0];
+    assign LAR = (( SW_MEM & !ST0 & W_clk[0] ) | (is_IR & (IR[7:4] == 4'b0101|IR[7:4] == 4'b0110) & W_clk[1])) & T_clk_3;
+    assign MBUS = ((SW == 3'b010) & ST0 & W_clk[0]) | (is_IR & (IR[7:4] == 4'b0101) & W_clk[2]);
+    assign STOP = (is_IR & (IR[7:4] == 4'b1110) & W_clk[1]) | SELCTL;
+    assign DRW = (SW == 3'b100) | (W_clk[1] & ( is_IR & (IR[7:6] == 2'b00) | (IR[7:4] == 4'b0100) ) ) | (W_clk[2] & (is_IR & (IR[7:4] == 4'b0101)));
+    assign SELCTL = !is_IR;
+    assign SBUS = (SW == 3'b100) | (SW == 3'b001) | ((SW == 3'b010) & !ST0);
+    
+    always @(*) begin
+        if(SW == 3'b100) begin
+            case ({W_clk[1:0],ST0})
+                3'b010: SEL = 4'b0011;
+                3'b100: SEL = 4'b0100;
+                3'b011: SEL = 4'b1001;
+                3'b101: SEL = 4'b1110;
+                default SEL = 4'b0000: 
+            endcase
+        end
+        else if (is_IR) begin
+            case (IR[7:4])
+                4'b0001: S = 4'b1001;
+                4'b0010: S = 4'b0110;
+                4'b0011: S = 4'b1011;
+                4'b0100: S = 4'b0000;
+                4'b0101: S = 4'b1010;
+                4'b0110: S = W_clk[2] ? 4'b1111 : 4'b1010;
+                4'b1001: S = 4'b1111;
+                default: 
+            endcase
+        end
+        else begin
+            SEL = 4'b0000;
+            S = 4'b0000;
+        end
+    end
+
+
+    
+endmodule
