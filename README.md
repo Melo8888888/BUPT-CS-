@@ -1,5 +1,8 @@
 # BUPT-CS-学习资料
 是笔者结合很对前辈的资料合集+个人考试心得，如有侵权，请随时联系！
+
+建议看看**期末心得**!
+
 资料来源：
 
 https://github.com/William-Seven/Collected-study-materials-from-BUPT/tree/main/CSAPP%E8%AE%A1%E5%9F%BA  北邮本科计算机资料
@@ -27,3 +30,5 @@ https://github.com/shucan-yang/BUPT_CS_course_notes
 非常非常厉害的卢学长 https://github.com/agicy
 
 7.16更新： **在另外一个分支下面是大二下的学习资料**
+
+
